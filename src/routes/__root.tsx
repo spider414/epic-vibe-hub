@@ -144,6 +144,9 @@ function RootComponent() {
           <Outlet />
         </main>
         <Footer />
+        {/* space for the sticky mobile CTA bar */}
+        <div className="h-20 lg:hidden" aria-hidden />
+
       </div>
       <Toaster position="top-center" />
     </QueryClientProvider>

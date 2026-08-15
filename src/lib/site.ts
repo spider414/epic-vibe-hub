@@ -37,3 +37,19 @@ export function formatEventDate(iso: string) {
     minute: "2-digit",
   });
 }
+
+export function formatDay(iso: string) {
+  return new Date(iso).toLocaleDateString("en-NG", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export function formatTime(iso: string) {
+  return new Date(iso).toLocaleTimeString("en-NG", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
