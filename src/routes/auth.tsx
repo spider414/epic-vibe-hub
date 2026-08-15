@@ -48,18 +48,27 @@ function AuthPage() {
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     const parsed = credsSchema.safeParse({ email, password });
-    if (!parsed.success) return toast.error(parsed.error.issues[0]!.message);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]!.message);
+      return;
+    }
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword(parsed.data);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     navigate({ to: "/admin", replace: true });
   }
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
     const parsed = credsSchema.safeParse({ email, password });
-    if (!parsed.success) return toast.error(parsed.error.issues[0]!.message);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]!.message);
+      return;
+    }
     setBusy(true);
     const { data, error } = await supabase.auth.signUp({
       ...parsed.data,
@@ -69,7 +78,10 @@ function AuthPage() {
       },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     if (data.session) {
       navigate({ to: "/admin", replace: true });
       return;
