@@ -81,15 +81,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Epic Entertainment — Parties & Events in Nigeria" },
+      { title: "Epic Entertainment — Pool, Beach & Club Parties in Nigeria" },
       {
         name: "description",
         content:
-          "Epic Entertainment plans and hosts pool, beach, apartment and club parties across Nigeria, and books the Creative Dance Team for performances.",
+          "Nigeria's party people. Buy tickets to Epic Entertainment events, book us to host your party, or book the Creative Dance Team for performances and classes.",
       },
       { name: "author", content: "Epic Entertainment" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Epic Entertainment — Pool, Beach & Club Parties in Nigeria" },
+      { name: "twitter:title", content: "Epic Entertainment — Pool, Beach & Club Parties in Nigeria" },
+      { property: "og:description", content: "Nigeria's party people. Buy tickets to Epic Entertainment events, book us to host your party, or book the Creative Dance Team for performances and classes." },
+      { name: "twitter:description", content: "Nigeria's party people. Buy tickets to Epic Entertainment events, book us to host your party, or book the Creative Dance Team for performances and classes." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b03e850cd465f6e3f22c1fccdb5f4ecd/id-preview-c566e983--e838f6bf-66f9-47b8-b498-3a3c12fcb783.lovable.app-1786767844597.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b03e850cd465f6e3f22c1fccdb5f4ecd/id-preview-c566e983--e838f6bf-66f9-47b8-b498-3a3c12fcb783.lovable.app-1786767844597.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

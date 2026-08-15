@@ -20,11 +20,11 @@ export const Route = createFileRoute("/")({
         content:
           "Nigeria's party people. Buy tickets to Epic Entertainment events, book us to host your party, or book the Creative Dance Team for performances and classes.",
       },
-      { property: "og:title", content: "Epic Entertainment — Nigeria's Party People" },
+      { property: "og:title", content: "Epic Entertainment — Pool, Beach & Club Parties in Nigeria" },
       {
         property: "og:description",
         content:
-          "Pool parties, beach takeovers, club nights and pro dance performances. Tickets and bookings online.",
+          "Nigeria's party people. Buy tickets to Epic Entertainment events, book us to host your party, or book the Creative Dance Team for performances and classes.",
       },
     ],
   }),
