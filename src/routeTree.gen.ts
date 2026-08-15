@@ -10,7 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BookRouteImport } from './routes/book'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DanceRouteImport } from './routes/dance'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as EventsSlugRouteImport } from './routes/events.$slug'
 
@@ -19,9 +23,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookRoute = BookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DanceRoute = DanceRouteImport.update({
+  id: '/dance',
+  path: '/dance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -37,34 +61,75 @@ const EventsSlugRoute = EventsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
+  '/dance': typeof DanceRoute
   '/events': typeof EventsRouteWithChildren
+  '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
   '/events/$slug': typeof EventsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
+  '/dance': typeof DanceRoute
   '/events': typeof EventsRouteWithChildren
+  '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
   '/events/$slug': typeof EventsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/book': typeof BookRoute
+  '/contact': typeof ContactRoute
+  '/dance': typeof DanceRoute
   '/events': typeof EventsRouteWithChildren
+  '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
   '/events/$slug': typeof EventsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/events' | '/services' | '/events/$slug'
+  fullPaths:
+    | '/'
+    | '/book'
+    | '/contact'
+    | '/dance'
+    | '/events'
+    | '/gallery'
+    | '/services'
+    | '/events/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/events' | '/services' | '/events/$slug'
-  id: '__root__' | '/' | '/events' | '/services' | '/events/$slug'
+  to:
+    | '/'
+    | '/book'
+    | '/contact'
+    | '/dance'
+    | '/events'
+    | '/gallery'
+    | '/services'
+    | '/events/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/book'
+    | '/contact'
+    | '/dance'
+    | '/events'
+    | '/gallery'
+    | '/services'
+    | '/events/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BookRoute: typeof BookRoute
+  ContactRoute: typeof ContactRoute
+  DanceRoute: typeof DanceRoute
   EventsRoute: typeof EventsRouteWithChildren
+  GalleryRoute: typeof GalleryRoute
   ServicesRoute: typeof ServicesRoute
 }
 
@@ -77,11 +142,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/book': {
+      id: '/book'
+      path: '/book'
+      fullPath: '/book'
+      preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dance': {
+      id: '/dance'
+      path: '/dance'
+      fullPath: '/dance'
+      preLoaderRoute: typeof DanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events': {
       id: '/events'
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -114,7 +207,11 @@ const EventsRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BookRoute: BookRoute,
+  ContactRoute: ContactRoute,
+  DanceRoute: DanceRoute,
   EventsRoute: EventsRouteWithChildren,
+  GalleryRoute: GalleryRoute,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport

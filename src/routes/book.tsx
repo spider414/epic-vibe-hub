@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { SITE } from "@/lib/site";
 
-type BookSearch = { package?: string; type?: string };
+type BookSearch = { package?: string | undefined; type?: string | undefined };
 
 export const Route = createFileRoute("/book")({
   validateSearch: (search: Record<string, unknown>): BookSearch => ({
