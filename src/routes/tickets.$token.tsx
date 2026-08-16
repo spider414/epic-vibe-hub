@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Download, Loader2, MapPin, ShieldCheck } from "lucide-react";
-import QRCode from "qrcode";
-import { useEffect, useState } from "react";
+import { CalendarDays, Loader2, MapPin, Printer, ShieldCheck } from "lucide-react";
 
+import { DigitalTicket } from "@/components/site/DigitalTicket";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,21 +58,6 @@ const STATUS_COPY: Record<string, { label: string; tone: string }> = {
   refunded: { label: "Refunded", tone: "border-muted-foreground/30 bg-muted text-muted-foreground" },
   checked_in: { label: "Checked in", tone: "border-primary/40 bg-primary/10 text-primary" },
 };
-
-function QrCode({ value }: { value: string }) {
-  const [src, setSrc] = useState<string | null>(null);
-  useEffect(() => {
-    let active = true;
-    QRCode.toDataURL(value, { margin: 1, width: 320 }).then((url) => {
-      if (active) setSrc(url);
-    });
-    return () => {
-      active = false;
-    };
-  }, [value]);
-  if (!src) return <div className="h-40 w-40 animate-pulse rounded-xl bg-muted" />;
-  return <img src={src} alt={`QR code for ticket ${value}`} className="h-40 w-40 rounded-xl bg-white p-2" />;
-}
 
 function TicketPage() {
   const { token } = Route.useParams();
@@ -155,18 +139,21 @@ function TicketPage() {
         <Separator className="my-6" />
 
         {order.payment_status === "paid" && tickets.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid gap-6">
             {tickets.map((t) => (
-              <div
+              <DigitalTicket
                 key={t.ticket_code}
-                className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-background p-5 text-center"
-              >
-                <QrCode value={t.ticket_code} />
-                <p className="font-mono text-sm">{t.ticket_code}</p>
-                <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Ticket {t.serial} of {order.quantity} · {t.status.replace("_", " ")}
-                </p>
-              </div>
+                ticketCode={t.ticket_code}
+                serial={t.serial}
+                total={order.quantity}
+                status={t.status}
+                holderName={t.holder_name ?? order.customer_name}
+                orderNumber={order.order_number}
+                ticketType={order.ticket_type}
+                eventTitle={event?.title ?? "Epic Entertainment event"}
+                eventStartsAt={event?.starts_at ?? null}
+                venue={event ? `${event.venue}, ${event.city}` : "—"}
+              />
             ))}
           </div>
         ) : (
@@ -180,18 +167,19 @@ function TicketPage() {
                 {SITE.bank.name} · {SITE.bank.bank} · {SITE.bank.account}
               </strong>{" "}
               using <strong className="text-foreground">{order.order_number}</strong> as the reference. Your QR
-              tickets appear here automatically once we confirm the payment.
+              tickets appear here automatically once we confirm the payment — we never mark an order paid
+              before the payment is confirmed.
             </p>
           </div>
         )}
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Button
-            className="bg-hype text-primary-foreground"
+            variant="outline"
             onClick={() => window.print()}
             disabled={order.payment_status !== "paid"}
           >
-            <Download className="mr-2 h-4 w-4" /> Download ticket
+            <Printer className="mr-2 h-4 w-4" /> Print all tickets
           </Button>
           <Button asChild variant="outline">
             <Link to="/events">Browse more events</Link>
