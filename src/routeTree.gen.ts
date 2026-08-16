@@ -20,6 +20,7 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as EventsSlugRouteImport } from './routes/events.$slug'
+import { Route as TicketsTokenRouteImport } from './routes/tickets.$token'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -75,6 +76,11 @@ const EventsSlugRoute = EventsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => EventsRoute,
 } as any)
+const TicketsTokenRoute = TicketsTokenRouteImport.update({
+  id: '/tickets/$token',
+  path: '/tickets/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
+  '/tickets/$token': typeof TicketsTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
+  '/tickets/$token': typeof TicketsTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
+  '/tickets/$token': typeof TicketsTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/admin'
     | '/events/$slug'
+    | '/tickets/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/admin'
     | '/events/$slug'
+    | '/tickets/$token'
   id:
     | '__root__'
     | '/'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/_authenticated/admin'
     | '/events/$slug'
+    | '/tickets/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -164,6 +176,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRouteWithChildren
   GalleryRoute: typeof GalleryRoute
   ServicesRoute: typeof ServicesRoute
+  TicketsTokenRoute: typeof TicketsTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsSlugRouteImport
       parentRoute: typeof EventsRoute
     }
+    '/tickets/$token': {
+      id: '/tickets/$token'
+      path: '/tickets/$token'
+      fullPath: '/tickets/$token'
+      preLoaderRoute: typeof TicketsTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -280,6 +300,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRouteWithChildren,
   GalleryRoute: GalleryRoute,
   ServicesRoute: ServicesRoute,
+  TicketsTokenRoute: TicketsTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
