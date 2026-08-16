@@ -90,7 +90,17 @@ export function TicketTypesManager({ events }: { events: EventOption[] }) {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  async function patch(id: string, values: Record<string, unknown>) {
+  type TicketTypePatch = Partial<{
+    price: number;
+    quantity_total: number | null;
+    sale_starts_at: string | null;
+    sale_ends_at: string | null;
+    status: string;
+    name: string;
+    description: string | null;
+  }>;
+
+  async function patch(id: string, values: TicketTypePatch) {
     const { error } = await supabase.from("ticket_types").update(values).eq("id", id);
     if (error) toast.error(error.message);
     else refresh();
