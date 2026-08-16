@@ -4,6 +4,7 @@ import { CalendarDays, Inbox, LogOut, Mail, Ticket, TrendingUp, Users } from "lu
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { TicketTypesManager } from "@/components/admin/TicketTypesManager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -263,7 +264,16 @@ function AdminPage() {
         </TabsContent>
 
         {/* TICKETS */}
-        <TabsContent value="tickets" className="pt-6">
+        <TabsContent value="tickets" className="space-y-8 pt-6">
+          <Panel title="Ticket types & pricing">
+            <TicketTypesManager
+              events={(events.data ?? []).map((e) => ({
+                id: e.id,
+                title: e.title,
+                starts_at: e.starts_at,
+              }))}
+            />
+          </Panel>
           <Panel title="Ticket orders">
             <Table>
               <TableHeader>
@@ -294,7 +304,7 @@ function AdminPage() {
                     <TableCell>
                       <StatusSelect
                         value={o.payment_status}
-                        options={["pending", "paid", "cancelled", "refunded"]}
+                        options={["pending", "paid", "cancelled", "refunded", "checked_in"]}
                         onChange={async (v) => {
                           await supabase
                             .from("ticket_orders")
