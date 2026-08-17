@@ -436,14 +436,16 @@ function EventDetail() {
                     <Field label="Phone" type="tel" value={form.phone} required minLength={7}
                       onChange={(v) => setForm((f) => ({ ...f, phone: v }))} />
                     <div className="space-y-2">
-                      <Label>Notes (optional)</Label>
+                      <Label htmlFor="field-notes">Notes (optional)</Label>
                       <Textarea
+                        id="field-notes"
                         value={form.notes}
                         maxLength={500}
                         onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                         placeholder="Anything we should know?"
                       />
                     </div>
+
                     <div className="flex gap-2">
                       <Button type="button" variant="outline" className="h-12 flex-1 border-border"
                         onClick={() => setStep("select")}>
