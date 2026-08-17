@@ -15,10 +15,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DanceRouteImport } from './routes/dance'
-import { Route as EventsRouteImport } from './routes/events'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as EventsSlugRouteImport } from './routes/events.$slug'
 import { Route as TicketsTokenRouteImport } from './routes/tickets.$token'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -52,11 +52,6 @@ const DanceRoute = DanceRouteImport.update({
   path: '/dance',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EventsRoute = EventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
@@ -72,10 +67,15 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const EventsIndexRoute = EventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsSlugRoute = EventsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => EventsRoute,
+  id: '/events/$slug',
+  path: '/events/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const TicketsTokenRoute = TicketsTokenRouteImport.update({
   id: '/tickets/$token',
@@ -95,12 +95,12 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/dance': typeof DanceRoute
-  '/events': typeof EventsRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tickets/$token': typeof TicketsTokenRoute
+  '/events/': typeof EventsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -109,12 +109,12 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/dance': typeof DanceRoute
-  '/events': typeof EventsRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tickets/$token': typeof TicketsTokenRoute
+  '/events': typeof EventsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -125,12 +125,12 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/contact': typeof ContactRoute
   '/dance': typeof DanceRoute
-  '/events': typeof EventsRouteWithChildren
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tickets/$token': typeof TicketsTokenRoute
+  '/events/': typeof EventsIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -141,12 +141,12 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/dance'
-    | '/events'
     | '/gallery'
     | '/services'
     | '/admin'
     | '/events/$slug'
     | '/tickets/$token'
+    | '/events/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -155,12 +155,12 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/dance'
-    | '/events'
     | '/gallery'
     | '/services'
     | '/admin'
     | '/events/$slug'
     | '/tickets/$token'
+    | '/events'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -170,12 +170,12 @@ export interface FileRouteTypes {
     | '/book'
     | '/contact'
     | '/dance'
-    | '/events'
     | '/gallery'
     | '/services'
     | '/_authenticated/admin'
     | '/events/$slug'
     | '/tickets/$token'
+    | '/events/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -186,10 +186,11 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   ContactRoute: typeof ContactRoute
   DanceRoute: typeof DanceRoute
-  EventsRoute: typeof EventsRouteWithChildren
   GalleryRoute: typeof GalleryRoute
   ServicesRoute: typeof ServicesRoute
+  EventsSlugRoute: typeof EventsSlugRoute
   TicketsTokenRoute: typeof TicketsTokenRoute
+  EventsIndexRoute: typeof EventsIndexRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -237,13 +238,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DanceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/events': {
-      id: '/events'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof EventsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
@@ -265,12 +259,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/events/': {
+      id: '/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof EventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events/$slug': {
       id: '/events/$slug'
-      path: '/$slug'
+      path: '/events/$slug'
       fullPath: '/events/$slug'
       preLoaderRoute: typeof EventsSlugRouteImport
-      parentRoute: typeof EventsRoute
+      parentRoute: typeof rootRouteImport
     }
     '/tickets/$token': {
       id: '/tickets/$token'
@@ -300,17 +301,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface EventsRouteChildren {
-  EventsSlugRoute: typeof EventsSlugRoute
-}
-
-const EventsRouteChildren: EventsRouteChildren = {
-  EventsSlugRoute: EventsSlugRoute,
-}
-
-const EventsRouteWithChildren =
-  EventsRoute._addFileChildren(EventsRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
@@ -318,10 +308,11 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   ContactRoute: ContactRoute,
   DanceRoute: DanceRoute,
-  EventsRoute: EventsRouteWithChildren,
   GalleryRoute: GalleryRoute,
   ServicesRoute: ServicesRoute,
+  EventsSlugRoute: EventsSlugRoute,
   TicketsTokenRoute: TicketsTokenRoute,
+  EventsIndexRoute: EventsIndexRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

@@ -20,7 +20,7 @@ import { EVENT_CATEGORIES, lowestPrice, type TicketTypeRow } from "@/lib/events"
 import { formatNaira } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/events")({
+export const Route = createFileRoute("/events/")({
   head: () => ({
     meta: [
       { title: "Upcoming Events & Tickets — Epic Entertainment" },
