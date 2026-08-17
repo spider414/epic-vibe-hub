@@ -8,6 +8,7 @@ import danceImg from "@/assets/dance-team.jpg";
 import heroImg from "@/assets/hero-party.jpg";
 import poolImg from "@/assets/pool-party.jpg";
 import { EventCard, type EventRow } from "@/components/site/EventCard";
+import { Reveal } from "@/components/site/Reveal";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -136,7 +137,7 @@ function Home() {
 
       {/* UPCOMING EVENTS */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+        <Reveal className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-xs tracking-[0.3em] text-accent">WHAT'S NEXT</p>
             <h2 className="mt-2 font-display text-4xl sm:text-5xl">Upcoming events</h2>
@@ -146,11 +147,13 @@ function Home() {
               See all events <ArrowRight className="ml-1 h-4 w-4" />
             </Link>
           </Button>
-        </div>
+        </Reveal>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {(events ?? []).map((event) => (
-            <EventCard key={event.id} event={event} />
+          {(events ?? []).map((event, i) => (
+            <Reveal key={event.id} delay={i * 80}>
+              <EventCard event={event} />
+            </Reveal>
           ))}
           {events?.length === 0 && (
             <p className="text-muted-foreground">
@@ -163,10 +166,12 @@ function Home() {
       {/* WHAT WE DO */}
       <section className="border-y border-border/60 bg-surface py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <p className="text-xs tracking-[0.3em] text-accent">WHAT WE DO</p>
-          <h2 className="mt-2 max-w-2xl font-display text-4xl sm:text-5xl">
-            One brand, every kind of turn-up
-          </h2>
+          <Reveal>
+            <p className="text-xs tracking-[0.3em] text-accent">WHAT WE DO</p>
+            <h2 className="mt-2 max-w-2xl font-display text-4xl sm:text-5xl">
+              One brand, every kind of turn-up
+            </h2>
+          </Reveal>
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             {[
               {
@@ -184,8 +189,8 @@ function Home() {
                 title: "Creative Dance Team",
                 text: "Professional dancers for parties, weddings, music videos and clubs — plus classes and choreography.",
               },
-            ].map((c) => (
-              <article key={c.title} className="card-elevated overflow-hidden rounded-2xl">
+            ].map((c, i) => (
+              <Reveal key={c.title} as="article" delay={i * 90} className="card-elevated overflow-hidden rounded-2xl">
                 <img
                   src={c.img}
                   alt={c.title}
@@ -196,7 +201,7 @@ function Home() {
                   <h3 className="font-display text-2xl">{c.title}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
                 </div>
-              </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -227,8 +232,8 @@ function Home() {
               to: "/dance" as const,
               cta: "Join a class",
             },
-          ].map((c) => (
-            <div key={c.title} className="card-elevated rounded-2xl p-7">
+          ].map((c, i) => (
+            <Reveal key={c.title} delay={i * 90} className="card-elevated rounded-2xl p-7">
               <c.icon className="h-8 w-8 text-primary" />
               <h3 className="mt-4 font-display text-2xl">{c.title}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
@@ -237,7 +242,7 @@ function Home() {
                   {c.cta} <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -245,11 +250,13 @@ function Home() {
       {/* TESTIMONIALS */}
       <section className="border-t border-border/60 bg-surface py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <p className="text-xs tracking-[0.3em] text-accent">THE REVIEWS</p>
-          <h2 className="mt-2 font-display text-4xl sm:text-5xl">People who partied with us</h2>
+          <Reveal>
+            <p className="text-xs tracking-[0.3em] text-accent">THE REVIEWS</p>
+            <h2 className="mt-2 font-display text-4xl sm:text-5xl">People who partied with us</h2>
+          </Reveal>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {(testimonials ?? []).map((t) => (
-              <figure key={t.id} className="card-elevated rounded-2xl p-6">
+            {(testimonials ?? []).map((t, i) => (
+              <Reveal key={t.id} delay={i * 80} className="card-elevated rounded-2xl p-6">
                 <div className="flex gap-0.5 text-gold">
                   {Array.from({ length: t.rating }).map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-current" />
@@ -262,7 +269,7 @@ function Home() {
                     {t.author_role}
                   </span>
                 </figcaption>
-              </figure>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -277,7 +284,7 @@ function Home() {
           className="absolute inset-0 h-full w-full object-cover opacity-40"
         />
         <div className="absolute inset-0 night-fade" />
-        <div className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6">
+        <Reveal className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6">
           <h2 className="font-display text-4xl sm:text-6xl">
             Your party. <span className="text-hype">Our energy.</span>
           </h2>
@@ -292,7 +299,7 @@ function Home() {
           >
             <Link to="/book">Start your booking</Link>
           </Button>
-        </div>
+        </Reveal>
       </section>
     </>
   );
