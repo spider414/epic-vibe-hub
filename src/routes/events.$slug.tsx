@@ -553,10 +553,12 @@ function Field({
   required?: boolean;
   minLength?: number;
 }) {
+  const id = `field-${label.toLowerCase().replace(/[^a-z]+/g, "-")}`;
   return (
     <div className="space-y-2">
-      <Label>{label}</Label>
+      <Label htmlFor={id}>{label}</Label>
       <Input
+        id={id}
         className="h-12"
         type={type}
         value={value}
@@ -567,4 +569,5 @@ function Field({
       />
     </div>
   );
+
 }
