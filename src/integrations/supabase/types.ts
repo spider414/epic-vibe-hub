@@ -16,62 +16,95 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          alt_date: string | null
+          attachments: Json
+          balance_amount: number | null
           booking_type: string
           budget: string | null
+          contact_method: string
           created_at: string
           deposit_amount: number | null
           deposit_status: string
           details: string | null
+          duration: string | null
           email: string
+          event_type: string | null
           full_name: string
           guest_count: number | null
           id: string
+          internal_notes: string | null
           location: string | null
           occasion: string | null
           organisation: string | null
           package_name: string | null
           phone: string
           preferred_date: string | null
+          quote_amount: number | null
+          quote_notes: string | null
+          reference: string | null
+          services: string[]
           status: string
           updated_at: string
         }
         Insert: {
+          alt_date?: string | null
+          attachments?: Json
+          balance_amount?: number | null
           booking_type?: string
           budget?: string | null
+          contact_method?: string
           created_at?: string
           deposit_amount?: number | null
           deposit_status?: string
           details?: string | null
+          duration?: string | null
           email: string
+          event_type?: string | null
           full_name: string
           guest_count?: number | null
           id?: string
+          internal_notes?: string | null
           location?: string | null
           occasion?: string | null
           organisation?: string | null
           package_name?: string | null
           phone: string
           preferred_date?: string | null
+          quote_amount?: number | null
+          quote_notes?: string | null
+          reference?: string | null
+          services?: string[]
           status?: string
           updated_at?: string
         }
         Update: {
+          alt_date?: string | null
+          attachments?: Json
+          balance_amount?: number | null
           booking_type?: string
           budget?: string | null
+          contact_method?: string
           created_at?: string
           deposit_amount?: number | null
           deposit_status?: string
           details?: string | null
+          duration?: string | null
           email?: string
+          event_type?: string | null
           full_name?: string
           guest_count?: number | null
           id?: string
+          internal_notes?: string | null
           location?: string | null
           occasion?: string | null
           organisation?: string | null
           package_name?: string | null
           phone?: string
           preferred_date?: string | null
+          quote_amount?: number | null
+          quote_notes?: string | null
+          reference?: string | null
+          services?: string[]
           status?: string
           updated_at?: string
         }
@@ -621,6 +654,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_booking: { Args: { _payload: Json }; Returns: string }
       get_order_by_token: { Args: { _token: string }; Returns: Json }
       has_role: {
         Args: {
