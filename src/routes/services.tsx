@@ -65,7 +65,7 @@ function ServicesPage() {
           and we'll build a bespoke proposal.
         </p>
         <Button asChild className="mt-6 bg-hype text-primary-foreground hover:opacity-90">
-          <Link to="/book">Request a custom quote</Link>
+          <Link to="/book-us">Request a custom quote</Link>
         </Button>
       </section>
     </div>
@@ -114,7 +114,7 @@ function PackageGrid({ title, items }: { title: string; items: Pack[] }) {
               ))}
             </ul>
             <Button asChild className="mt-7 bg-hype text-primary-foreground hover:opacity-90">
-              <Link to="/book" search={{ package: p.name }}>
+              <Link to="/book-us" search={{ package: p.name }}>
                 Book this package
               </Link>
             </Button>

@@ -4,6 +4,7 @@ import { CalendarDays, Inbox, LogOut, Mail, Ticket, TrendingUp, Users } from "lu
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { BookingsManager } from "@/components/admin/BookingsManager";
 import { TicketTypesManager } from "@/components/admin/TicketTypesManager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
