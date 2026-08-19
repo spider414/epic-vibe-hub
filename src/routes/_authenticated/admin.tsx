@@ -324,46 +324,10 @@ function AdminPage() {
         {/* BOOKINGS */}
         <TabsContent value="bookings" className="pt-6">
           <Panel title="Booking requests">
-            <div className="space-y-4">
-              {(bookings.data ?? []).map((b) => (
-                <div key={b.id} className="rounded-xl border border-border p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="font-semibold">
-                        {b.full_name}{" "}
-                        <Badge variant="outline" className="ml-2 capitalize">
-                          {b.booking_type.replace(/_/g, " ")}
-                        </Badge>
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {b.email} • {b.phone} {b.location && `• ${b.location}`}
-                      </p>
-                    </div>
-                    <StatusSelect
-                      value={b.status}
-                      options={["new", "contacted", "quoted", "confirmed", "completed", "lost"]}
-                      onChange={async (v) => {
-                        await supabase.from("bookings").update({ status: v }).eq("id", b.id);
-                        invalidate("bookings");
-                      }}
-                    />
-                  </div>
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    {b.occasion && <>Occasion: {b.occasion}. </>}
-                    {b.preferred_date && <>Date: {b.preferred_date}. </>}
-                    {b.guest_count && <>Guests: {b.guest_count}. </>}
-                    {b.budget && <>Budget: {b.budget}. </>}
-                    {b.package_name && <>Package: {b.package_name}.</>}
-                  </p>
-                  {b.details && <p className="mt-2 text-sm">{b.details}</p>}
-                </div>
-              ))}
-              {bookings.data?.length === 0 && (
-                <p className="text-muted-foreground">No booking requests yet.</p>
-              )}
-            </div>
+            <BookingsManager />
           </Panel>
         </TabsContent>
+
 
         {/* ENQUIRIES */}
         <TabsContent value="enquiries" className="pt-6">
