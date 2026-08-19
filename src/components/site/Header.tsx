@@ -94,7 +94,7 @@ export function Header() {
               variant="outline"
               className="border-border bg-transparent tracking-wide"
             >
-              <Link to="/book">BOOK US</Link>
+              <Link to="/book-us">BOOK US</Link>
             </Button>
             <Button
               asChild
@@ -180,7 +180,7 @@ export function Header() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-14 border-border text-base">
-              <Link to="/book">BOOK US</Link>
+              <Link to="/book-us">BOOK US</Link>
             </Button>
           </div>
         </nav>
@@ -196,7 +196,7 @@ export function Header() {
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-12 flex-1 border-border">
-              <Link to="/book">Book us</Link>
+              <Link to="/book-us">Book us</Link>
             </Button>
           </div>
         </div>

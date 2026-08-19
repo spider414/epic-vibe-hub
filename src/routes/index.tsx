@@ -106,7 +106,7 @@ function Home() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-border bg-background/40">
-              <Link to="/book">Book us for your party</Link>
+              <Link to="/book-us">Book us for your party</Link>
             </Button>
           </div>
           <dl className="mt-14 grid max-w-2xl grid-cols-3 gap-6">
@@ -297,7 +297,7 @@ function Home() {
             size="lg"
             className="mt-8 bg-hype text-primary-foreground shadow-[var(--shadow-glow)] hover:opacity-90"
           >
-            <Link to="/book">Start your booking</Link>
+            <Link to="/book-us">Start your booking</Link>
           </Button>
         </Reveal>
       </section>

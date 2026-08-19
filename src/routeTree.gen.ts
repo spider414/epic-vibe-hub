@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as BookUsRouteImport } from './routes/book-us'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DanceRouteImport } from './routes/dance'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -40,6 +41,11 @@ const AuthRoute = AuthRouteImport.update({
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookUsRoute = BookUsRouteImport.update({
+  id: '/book-us',
+  path: '/book-us',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
@@ -123,6 +131,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
@@ -139,6 +148,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/book'
+    | '/book-us'
     | '/contact'
     | '/dance'
     | '/gallery'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/book'
+    | '/book-us'
     | '/contact'
     | '/dance'
     | '/gallery'
@@ -168,6 +179,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/book'
+    | '/book-us'
     | '/contact'
     | '/dance'
     | '/gallery'
@@ -184,6 +196,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BookRoute: typeof BookRoute
+  BookUsRoute: typeof BookUsRoute
   ContactRoute: typeof ContactRoute
   DanceRoute: typeof DanceRoute
   GalleryRoute: typeof GalleryRoute
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/book'
       fullPath: '/book'
       preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book-us': {
+      id: '/book-us'
+      path: '/book-us'
+      fullPath: '/book-us'
+      preLoaderRoute: typeof BookUsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -306,6 +326,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BookRoute: BookRoute,
+  BookUsRoute: BookUsRoute,
   ContactRoute: ContactRoute,
   DanceRoute: DanceRoute,
   GalleryRoute: GalleryRoute,
