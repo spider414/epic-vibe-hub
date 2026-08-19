@@ -92,7 +92,7 @@ export function BookingsManager() {
 
   const update = useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Record<string, unknown> }) => {
-      const { error } = await supabase.from("bookings").update(patch).eq("id", id);
+      const { error } = await supabase.from("bookings").update(patch as never).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -439,7 +439,7 @@ function BookingDetail({
   );
 }
 
-function Row({ label, value }: { label: string; value?: string | null }) {
+function Row({ label, value }: { label: string; value?: string | null | undefined }) {
   return (
     <div>
       <dt className="text-xs uppercase tracking-wide text-muted-foreground">{label}</dt>
