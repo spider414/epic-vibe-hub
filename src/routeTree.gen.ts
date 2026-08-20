@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
+import { Route as BookDanceTeamRouteImport } from './routes/book-dance-team'
 import { Route as BookUsRouteImport } from './routes/book-us'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CreativeDanceTeamRouteImport } from './routes/creative-dance-team'
@@ -42,6 +43,11 @@ const AuthRoute = AuthRouteImport.update({
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookDanceTeamRoute = BookDanceTeamRouteImport.update({
+  id: '/book-dance-team',
+  path: '/book-dance-team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookUsRoute = BookUsRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/book-dance-team': typeof BookDanceTeamRoute
   '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
   '/creative-dance-team': typeof CreativeDanceTeamRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/book-dance-team': typeof BookDanceTeamRoute
   '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
   '/creative-dance-team': typeof CreativeDanceTeamRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/book-dance-team': typeof BookDanceTeamRoute
   '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
   '/creative-dance-team': typeof CreativeDanceTeamRoute
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/book'
+    | '/book-dance-team'
     | '/book-us'
     | '/contact'
     | '/creative-dance-team'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/book'
+    | '/book-dance-team'
     | '/book-us'
     | '/contact'
     | '/creative-dance-team'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/book'
+    | '/book-dance-team'
     | '/book-us'
     | '/contact'
     | '/creative-dance-team'
@@ -208,6 +220,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   BookRoute: typeof BookRoute
+  BookDanceTeamRoute: typeof BookDanceTeamRoute
   BookUsRoute: typeof BookUsRoute
   ContactRoute: typeof ContactRoute
   CreativeDanceTeamRoute: typeof CreativeDanceTeamRoute
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/book'
       fullPath: '/book'
       preLoaderRoute: typeof BookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/book-dance-team': {
+      id: '/book-dance-team'
+      path: '/book-dance-team'
+      fullPath: '/book-dance-team'
+      preLoaderRoute: typeof BookDanceTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/book-us': {
@@ -346,6 +366,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   BookRoute: BookRoute,
+  BookDanceTeamRoute: BookDanceTeamRoute,
   BookUsRoute: BookUsRoute,
   ContactRoute: ContactRoute,
   CreativeDanceTeamRoute: CreativeDanceTeamRoute,
