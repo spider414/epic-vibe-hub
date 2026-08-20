@@ -110,6 +110,90 @@ export type Database = {
         }
         Relationships: []
       }
+      dance_bookings: {
+        Row: {
+          amount_paid: number | null
+          assigned_dancers: string[]
+          attachments: Json
+          balance_amount: number | null
+          budget: string | null
+          created_at: string
+          dance_style: string | null
+          dancers_count: number | null
+          details: string | null
+          duration: string | null
+          email: string
+          event_date: string | null
+          event_type: string | null
+          full_name: string
+          id: string
+          internal_notes: string | null
+          location: string | null
+          needs_choreography: boolean
+          needs_classes: boolean
+          payment_status: string
+          phone: string
+          quote_amount: number | null
+          reference: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number | null
+          assigned_dancers?: string[]
+          attachments?: Json
+          balance_amount?: number | null
+          budget?: string | null
+          created_at?: string
+          dance_style?: string | null
+          dancers_count?: number | null
+          details?: string | null
+          duration?: string | null
+          email: string
+          event_date?: string | null
+          event_type?: string | null
+          full_name: string
+          id?: string
+          internal_notes?: string | null
+          location?: string | null
+          needs_choreography?: boolean
+          needs_classes?: boolean
+          payment_status?: string
+          phone: string
+          quote_amount?: number | null
+          reference?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number | null
+          assigned_dancers?: string[]
+          attachments?: Json
+          balance_amount?: number | null
+          budget?: string | null
+          created_at?: string
+          dance_style?: string | null
+          dancers_count?: number | null
+          details?: string | null
+          duration?: string | null
+          email?: string
+          event_date?: string | null
+          event_type?: string | null
+          full_name?: string
+          id?: string
+          internal_notes?: string | null
+          location?: string | null
+          needs_choreography?: boolean
+          needs_classes?: boolean
+          payment_status?: string
+          phone?: string
+          quote_amount?: number | null
+          reference?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dancers: {
         Row: {
           bio: string | null
@@ -655,6 +739,7 @@ export type Database = {
     }
     Functions: {
       create_booking: { Args: { _payload: Json }; Returns: string }
+      create_dance_booking: { Args: { _payload: Json }; Returns: string }
       get_order_by_token: { Args: { _token: string }; Returns: Json }
       has_role: {
         Args: {
