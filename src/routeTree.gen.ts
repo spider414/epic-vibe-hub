@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as BookUsRouteImport } from './routes/book-us'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CreativeDanceTeamRouteImport } from './routes/creative-dance-team'
 import { Route as DanceRouteImport } from './routes/dance'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -51,6 +52,11 @@ const BookUsRoute = BookUsRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreativeDanceTeamRoute = CreativeDanceTeamRouteImport.update({
+  id: '/creative-dance-team',
+  path: '/creative-dance-team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DanceRoute = DanceRouteImport.update({
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
+  '/creative-dance-team': typeof CreativeDanceTeamRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
+  '/creative-dance-team': typeof CreativeDanceTeamRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
@@ -133,6 +141,7 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/book-us': typeof BookUsRoute
   '/contact': typeof ContactRoute
+  '/creative-dance-team': typeof CreativeDanceTeamRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/book-us'
     | '/contact'
+    | '/creative-dance-team'
     | '/dance'
     | '/gallery'
     | '/services'
@@ -165,6 +175,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/book-us'
     | '/contact'
+    | '/creative-dance-team'
     | '/dance'
     | '/gallery'
     | '/services'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/book-us'
     | '/contact'
+    | '/creative-dance-team'
     | '/dance'
     | '/gallery'
     | '/services'
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   BookUsRoute: typeof BookUsRoute
   ContactRoute: typeof ContactRoute
+  CreativeDanceTeamRoute: typeof CreativeDanceTeamRoute
   DanceRoute: typeof DanceRoute
   GalleryRoute: typeof GalleryRoute
   ServicesRoute: typeof ServicesRoute
@@ -249,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creative-dance-team': {
+      id: '/creative-dance-team'
+      path: '/creative-dance-team'
+      fullPath: '/creative-dance-team'
+      preLoaderRoute: typeof CreativeDanceTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dance': {
@@ -328,6 +348,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   BookUsRoute: BookUsRoute,
   ContactRoute: ContactRoute,
+  CreativeDanceTeamRoute: CreativeDanceTeamRoute,
   DanceRoute: DanceRoute,
   GalleryRoute: GalleryRoute,
   ServicesRoute: ServicesRoute,
