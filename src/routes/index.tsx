@@ -8,6 +8,7 @@ import danceImg from "@/assets/dance-team.jpg";
 import heroImg from "@/assets/hero-party.jpg";
 import poolImg from "@/assets/pool-party.jpg";
 import { EventCard, type EventRow } from "@/components/site/EventCard";
+import { HeroBackground } from "@/components/site/HeroBackground";
 import { Reveal } from "@/components/site/Reveal";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,12 +75,9 @@ function Home() {
     <>
       {/* HERO */}
       <section className="relative isolate overflow-hidden">
-        <img
-          src={heroImg}
+        <HeroBackground
+          fallbackSrc={heroImg}
           alt="Epic Entertainment pool party crowd in Lagos"
-          width={1920}
-          height={1088}
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
         />
         <div className="absolute inset-0 night-fade" />
         <div className="relative mx-auto max-w-7xl px-4 pb-24 pt-24 sm:px-6 sm:pb-32 sm:pt-32">

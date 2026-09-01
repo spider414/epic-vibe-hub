@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { BookingsManager } from "@/components/admin/BookingsManager";
+import { HeroMediaManager } from "@/components/admin/HeroMediaManager";
 import { TicketTypesManager } from "@/components/admin/TicketTypesManager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -202,7 +203,7 @@ function AdminPage() {
 
       <Tabs defaultValue="events" className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start">
-          {["events", "tickets", "bookings", "enquiries", "content", "audience"].map((t) => (
+          {["events", "tickets", "bookings", "enquiries", "content", "audience", "homepage"].map((t) => (
             <TabsTrigger key={t} value={t} className="capitalize">
               {t}
             </TabsTrigger>
@@ -452,6 +453,13 @@ function AdminPage() {
                 ))}
               </TableBody>
             </Table>
+          </Panel>
+        </TabsContent>
+
+        {/* HOMEPAGE */}
+        <TabsContent value="homepage" className="pt-6">
+          <Panel title="Hero background">
+            <HeroMediaManager />
           </Panel>
         </TabsContent>
       </Tabs>
