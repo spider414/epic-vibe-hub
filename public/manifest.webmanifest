@@ -1,0 +1,40 @@
+{
+  "name": "Epic Entertainment",
+  "short_name": "Epic Ent.",
+  "description": "Nigeria's party people. Buy tickets to Epic Entertainment events, book us to host your party, or book the Creative Dance Team.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1b1c24",
+  "theme_color": "#1b1c24",
+  "lang": "en-NG",
+  "categories": ["entertainment", "events", "lifestyle"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Upcoming Events",
+      "short_name": "Events",
+      "url": "/events",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Book Epic Entertainment",
+      "short_name": "Book Us",
+      "url": "/book-us",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Creative Dance Team",
+      "short_name": "Dance Team",
+      "url": "/creative-dance-team",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
