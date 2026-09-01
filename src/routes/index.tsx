@@ -8,6 +8,7 @@ import danceImg from "@/assets/dance-team.jpg";
 import heroImg from "@/assets/hero-party.jpg";
 import poolImg from "@/assets/pool-party.jpg";
 import { EventCard, type EventRow } from "@/components/site/EventCard";
+import { HeroBackground } from "@/components/site/HeroBackground";
 import { Reveal } from "@/components/site/Reveal";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
