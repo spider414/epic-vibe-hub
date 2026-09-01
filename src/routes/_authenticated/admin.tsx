@@ -455,6 +455,13 @@ function AdminPage() {
             </Table>
           </Panel>
         </TabsContent>
+
+        {/* HOMEPAGE */}
+        <TabsContent value="homepage" className="pt-6">
+          <Panel title="Hero background">
+            <HeroMediaManager />
+          </Panel>
+        </TabsContent>
       </Tabs>
     </div>
   );
