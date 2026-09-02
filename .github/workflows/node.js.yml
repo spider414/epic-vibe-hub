@@ -32,8 +32,10 @@ jobs:
       - name: Build website
         run: bun run build
 
-      - name: Add custom domain
-        run: echo "epicvibe.harmicglobal.com" > dist/CNAME
+      - name: Add custom domai
+  run: |
+    mkdir -p dist
+    echo "epicvibe.harmicglobal.com" > dist/CNAME
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
