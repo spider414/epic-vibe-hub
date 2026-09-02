@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -32,18 +32,15 @@ jobs:
       - name: Build website
         run: bun run build
 
-      - name: Add custom domai
-  run: |
-    mkdir -p dist
-    echo "epicvibe.harmicglobal.com" > dist/CNAME
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
+      - name: Add custom domain
+        run: |
+          mkdir -p dist
+          echo "epicvibe.harmicglobal.com" > dist/CNAME
 
       - name: Upload website
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist"
+          path: ./dist
 
   deploy:
     needs: build
@@ -54,6 +51,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy website
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
