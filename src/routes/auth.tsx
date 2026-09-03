@@ -164,25 +164,65 @@ function AuthPage() {
           </TabsContent>
 
           <TabsContent value="signup">
-            <form onSubmit={signUp} className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full name</Label>
-                <Input
-                  id="fullName"
-                  maxLength={100}
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-              </div>
-              <EmailPassword {...{ email, setEmail, password, setPassword }} />
-              <Button
-                disabled={busy}
-                className="w-full bg-hype text-primary-foreground hover:opacity-90"
-              >
-                {busy ? "Creating…" : "Create account"}
-              </Button>
-            </form>
+            {!inviteUnlocked ? (
+              <form onSubmit={unlockRegistration} className="space-y-4 pt-4">
+                <p className="rounded-2xl border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+                  Registration is invite-only. Ask an admin to generate a 6-digit code in the
+                  dashboard. Each code works once and expires after 5 minutes.
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="inviteEmail">Your email</Label>
+                  <Input
+                    id="inviteEmail"
+                    type="email"
+                    required
+                    maxLength={255}
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inviteCode">6-digit invite code</Label>
+                  <Input
+                    id="inviteCode"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="000000"
+                    className="text-center font-display text-2xl tracking-[0.5em]"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  />
+                </div>
+                <Button
+                  disabled={busy}
+                  className="w-full bg-hype text-primary-foreground hover:opacity-90"
+                >
+                  {busy ? "Checking…" : "Verify code"}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={signUp} className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full name</Label>
+                  <Input
+                    id="fullName"
+                    maxLength={100}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                </div>
+                <EmailPassword {...{ email, setEmail, password, setPassword }} />
+                <Button
+                  disabled={busy}
+                  className="w-full bg-hype text-primary-foreground hover:opacity-90"
+                >
+                  {busy ? "Creating…" : "Create account"}
+                </Button>
+              </form>
+            )}
           </TabsContent>
+
         </Tabs>
 
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
