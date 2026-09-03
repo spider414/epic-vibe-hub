@@ -103,6 +103,10 @@ function AuthPage() {
       toast.error(parsed.error.issues[0]!.message);
       return;
     }
+    if (parsed.data.email.toLowerCase() !== inviteEmail.trim().toLowerCase()) {
+      toast.error("Use the same email the invite code was verified with.");
+      return;
+    }
     setBusy(true);
     const { data, error } = await supabase.auth.signUp({
       ...parsed.data,
@@ -113,9 +117,19 @@ function AuthPage() {
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      const invalidCode = /invite code/i.test(error.message);
+      toast.error(
+        invalidCode
+          ? "Your invite code expired. Ask your admin for a new one."
+          : error.message,
+      );
+      if (invalidCode) {
+        setInviteUnlocked(false);
+        setInviteCode("");
+      }
       return;
     }
+
     if (data.session) {
       navigate({ to: "/admin", replace: true });
       return;
