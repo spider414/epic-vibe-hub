@@ -344,6 +344,42 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_codes: {
+        Row: {
+          claimed_at: string | null
+          claimed_email: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          expires_at: string
+          id: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_email?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          expires_at: string
+          id?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_email?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string
+          id?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: []
+      }
       media: {
         Row: {
           created_at: string
@@ -756,8 +792,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_invite_code: {
+        Args: { _code: string; _email: string }
+        Returns: boolean
+      }
       create_booking: { Args: { _payload: Json }; Returns: string }
       create_dance_booking: { Args: { _payload: Json }; Returns: string }
+      generate_invite_code: {
+        Args: never
+        Returns: {
+          code: string
+          expires_at: string
+        }[]
+      }
       get_order_by_token: { Args: { _token: string }; Returns: Json }
       has_role: {
         Args: {

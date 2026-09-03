@@ -38,12 +38,46 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteUnlocked, setInviteUnlocked] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/admin", replace: true });
     });
   }, [navigate]);
+
+  async function unlockRegistration(e: React.FormEvent) {
+    e.preventDefault();
+    const parsedEmail = z.string().trim().email().max(255).safeParse(inviteEmail);
+    if (!parsedEmail.success) {
+      toast.error("Enter the email you will register with");
+      return;
+    }
+    if (!/^\d{6}$/.test(inviteCode.trim())) {
+      toast.error("Enter the 6-digit code from your admin");
+      return;
+    }
+    setBusy(true);
+    const { data, error } = await supabase.rpc("claim_invite_code" as never, {
+      _code: inviteCode.trim(),
+      _email: parsedEmail.data,
+    } as never);
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (!data) {
+      toast.error("That code is invalid, already used or expired. Ask your admin for a new one.");
+      return;
+    }
+    setEmail(parsedEmail.data);
+    setInviteUnlocked(true);
+    toast.success("Code accepted — complete your registration now.");
+  }
+
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
@@ -69,6 +103,10 @@ function AuthPage() {
       toast.error(parsed.error.issues[0]!.message);
       return;
     }
+    if (parsed.data.email.toLowerCase() !== inviteEmail.trim().toLowerCase()) {
+      toast.error("Use the same email the invite code was verified with.");
+      return;
+    }
     setBusy(true);
     const { data, error } = await supabase.auth.signUp({
       ...parsed.data,
@@ -79,9 +117,19 @@ function AuthPage() {
     });
     setBusy(false);
     if (error) {
-      toast.error(error.message);
+      const invalidCode = /invite code/i.test(error.message);
+      toast.error(
+        invalidCode
+          ? "Your invite code expired. Ask your admin for a new one."
+          : error.message,
+      );
+      if (invalidCode) {
+        setInviteUnlocked(false);
+        setInviteCode("");
+      }
       return;
     }
+
     if (data.session) {
       navigate({ to: "/admin", replace: true });
       return;
@@ -130,25 +178,65 @@ function AuthPage() {
           </TabsContent>
 
           <TabsContent value="signup">
-            <form onSubmit={signUp} className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full name</Label>
-                <Input
-                  id="fullName"
-                  maxLength={100}
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-              </div>
-              <EmailPassword {...{ email, setEmail, password, setPassword }} />
-              <Button
-                disabled={busy}
-                className="w-full bg-hype text-primary-foreground hover:opacity-90"
-              >
-                {busy ? "Creating…" : "Create account"}
-              </Button>
-            </form>
+            {!inviteUnlocked ? (
+              <form onSubmit={unlockRegistration} className="space-y-4 pt-4">
+                <p className="rounded-2xl border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
+                  Registration is invite-only. Ask an admin to generate a 6-digit code in the
+                  dashboard. Each code works once and expires after 5 minutes.
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="inviteEmail">Your email</Label>
+                  <Input
+                    id="inviteEmail"
+                    type="email"
+                    required
+                    maxLength={255}
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inviteCode">6-digit invite code</Label>
+                  <Input
+                    id="inviteCode"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="000000"
+                    className="text-center font-display text-2xl tracking-[0.5em]"
+                    value={inviteCode}
+                    onChange={(e) => setInviteCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  />
+                </div>
+                <Button
+                  disabled={busy}
+                  className="w-full bg-hype text-primary-foreground hover:opacity-90"
+                >
+                  {busy ? "Checking…" : "Verify code"}
+                </Button>
+              </form>
+            ) : (
+              <form onSubmit={signUp} className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full name</Label>
+                  <Input
+                    id="fullName"
+                    maxLength={100}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                </div>
+                <EmailPassword {...{ email, setEmail, password, setPassword }} />
+                <Button
+                  disabled={busy}
+                  className="w-full bg-hype text-primary-foreground hover:opacity-90"
+                >
+                  {busy ? "Creating…" : "Create account"}
+                </Button>
+              </form>
+            )}
           </TabsContent>
+
         </Tabs>
 
         <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">

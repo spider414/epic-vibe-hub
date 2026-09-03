@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { BookingsManager } from "@/components/admin/BookingsManager";
 import { HeroMediaManager } from "@/components/admin/HeroMediaManager";
+import { InviteCodesManager } from "@/components/admin/InviteCodesManager";
 import { TicketTypesManager } from "@/components/admin/TicketTypesManager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -203,7 +204,7 @@ function AdminPage() {
 
       <Tabs defaultValue="events" className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start">
-          {["events", "tickets", "bookings", "enquiries", "content", "audience", "homepage"].map((t) => (
+          {["events", "tickets", "bookings", "enquiries", "content", "audience", "homepage", "access"].map((t) => (
             <TabsTrigger key={t} value={t} className="capitalize">
               {t}
             </TabsTrigger>
@@ -460,6 +461,13 @@ function AdminPage() {
         <TabsContent value="homepage" className="pt-6">
           <Panel title="Hero background">
             <HeroMediaManager />
+          </Panel>
+        </TabsContent>
+
+        {/* ACCESS */}
+        <TabsContent value="access" className="pt-6">
+          <Panel title="Registration invite codes">
+            <InviteCodesManager />
           </Panel>
         </TabsContent>
       </Tabs>
