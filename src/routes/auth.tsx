@@ -38,12 +38,46 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [inviteCode, setInviteCode] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteUnlocked, setInviteUnlocked] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/admin", replace: true });
     });
   }, [navigate]);
+
+  async function unlockRegistration(e: React.FormEvent) {
+    e.preventDefault();
+    const parsedEmail = z.string().trim().email().max(255).safeParse(inviteEmail);
+    if (!parsedEmail.success) {
+      toast.error("Enter the email you will register with");
+      return;
+    }
+    if (!/^\d{6}$/.test(inviteCode.trim())) {
+      toast.error("Enter the 6-digit code from your admin");
+      return;
+    }
+    setBusy(true);
+    const { data, error } = await supabase.rpc("claim_invite_code" as never, {
+      _code: inviteCode.trim(),
+      _email: parsedEmail.data,
+    } as never);
+    setBusy(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (!data) {
+      toast.error("That code is invalid, already used or expired. Ask your admin for a new one.");
+      return;
+    }
+    setEmail(parsedEmail.data);
+    setInviteUnlocked(true);
+    toast.success("Code accepted — complete your registration now.");
+  }
+
 
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
