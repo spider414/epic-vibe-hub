@@ -140,6 +140,8 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAdminArea = pathname.startsWith("/admin");
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
@@ -158,9 +160,9 @@ function RootComponent() {
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </main>
-        <Footer />
+        {!isAdminArea && <Footer />}
         {/* space for the sticky mobile CTA bar */}
-        <div className="h-20 lg:hidden" aria-hidden />
+        {!isAdminArea && <div className="h-20 lg:hidden" aria-hidden />}
 
       </div>
       <Toaster position="top-center" />
