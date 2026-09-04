@@ -76,3 +76,33 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Self-hosting with Node.js (e.g. Spaceship)
+
+The default `npm run build` targets Lovable hosting. To produce a Node.js
+server bundle instead:
+
+```sh
+npm install
+npm run build:node   # outputs a Node server to .output/
+npm run start        # runs node .output/server/index.mjs
+```
+
+Hosting panel settings:
+
+- **App root:** the project folder
+- **Node version:** 20 or newer
+- **Build command:** `npm install && npm run build:node`
+- **Start command:** `node .output/server/index.mjs` (or `npm run start`)
+- **Port:** the server listens on the `PORT` environment variable automatically
+
+Required environment variables (set them in your hosting panel):
+
+- `SUPABASE_URL`
+- `SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_SUPABASE_PROJECT_ID`
+
+Note: the database, authentication and file storage stay on the managed
+backend — self-hosting only moves the web server.
