@@ -172,13 +172,13 @@ function AdminPage() {
     return <div className="mx-auto max-w-7xl px-4 py-24 text-muted-foreground">Loading…</div>;
   }
 
-  if (!isAdmin) {
+  if (!hasAnyRole) {
     return (
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
-        <h1 className="font-display text-4xl">Admin access required</h1>
+        <h1 className="font-display text-4xl">Waiting for access</h1>
         <p className="mt-3 text-muted-foreground">
-          Your account is signed in but has no admin role yet. Ask an existing admin to grant you
-          access.
+          Your account is created, but an admin hasn't given you a role yet. Once they assign you a
+          section — tickets, bookings, events and so on — it will show up here.
         </p>
         <Button onClick={signOut} variant="outline" className="mt-6 border-border">
           Sign out
@@ -194,12 +194,16 @@ function AdminPage() {
     .filter((o) => o.payment_status === "paid")
     .reduce((sum, o) => sum + o.quantity, 0);
 
+  const visibleSections = SECTIONS.filter((s) => can(s.key));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs tracking-[0.3em] text-accent">CONTROL ROOM</p>
-          <h1 className="mt-1 font-display text-4xl">Admin dashboard</h1>
+          <h1 className="mt-1 font-display text-4xl">
+            {isAdmin ? "Admin dashboard" : "Team dashboard"}
+          </h1>
         </div>
         <Button variant="outline" className="border-border" onClick={signOut}>
           <LogOut className="mr-2 h-4 w-4" /> Sign out
@@ -207,11 +211,24 @@ function AdminPage() {
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={TrendingUp} label="Confirmed revenue" value={formatNaira(paidRevenue)} />
-        <Stat icon={Ticket} label="Tickets sold" value={String(ticketsSold)} />
-        <Stat icon={Inbox} label="Booking requests" value={String(bookings.data?.length ?? 0)} />
-        <Stat icon={Mail} label="Mailing list" value={String(subscribers.data?.length ?? 0)} />
+        {can("tickets") ? (
+          <>
+            <Stat icon={TrendingUp} label="Confirmed revenue" value={formatNaira(paidRevenue)} />
+            <Stat icon={Ticket} label="Tickets sold" value={String(ticketsSold)} />
+          </>
+        ) : null}
+        {can("bookings") ? (
+          <Stat
+            icon={Inbox}
+            label="Booking requests"
+            value={String(bookings.data?.length ?? 0)}
+          />
+        ) : null}
+        {can("audience") ? (
+          <Stat icon={Mail} label="Mailing list" value={String(subscribers.data?.length ?? 0)} />
+        ) : null}
       </div>
+
 
       <Tabs defaultValue="events" className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start">
