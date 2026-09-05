@@ -230,14 +230,15 @@ function AdminPage() {
       </div>
 
 
-      <Tabs defaultValue="events" className="mt-10">
+      <Tabs defaultValue={visibleSections[0]?.key ?? "events"} className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start">
-          {["events", "tickets", "bookings", "enquiries", "content", "audience", "homepage", "access"].map((t) => (
-            <TabsTrigger key={t} value={t} className="capitalize">
-              {t}
+          {visibleSections.map((t) => (
+            <TabsTrigger key={t.key} value={t.key} className="capitalize">
+              {t.key}
             </TabsTrigger>
           ))}
         </TabsList>
+
 
         {/* EVENTS */}
         <TabsContent value="events" className="space-y-8 pt-6">
