@@ -54,13 +54,21 @@ function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: isAdmin, isLoading: roleLoading } = useQuery({
-    queryKey: ["is-admin"],
+  const { data: me, isLoading: roleLoading } = useQuery({
+    queryKey: ["my-roles"],
     queryFn: async () => {
-      const { data } = await supabase.from("user_roles").select("role").eq("role", "admin");
-      return (data?.length ?? 0) > 0;
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData.user?.id;
+      const { data } = await supabase.from("user_roles").select("role");
+      return { userId, roles: (data ?? []).map((r) => r.role as AppRole) };
     },
   });
+
+  const roles = me?.roles ?? [];
+  const isAdmin = roles.includes("admin");
+  const hasAnyRole = roles.length > 0;
+  const can = (section: SectionKey) => canAccess(roles, section);
+
 
   const events = useQuery({
     queryKey: ["admin", "events"],
