@@ -6,7 +6,9 @@ import { toast } from "sonner";
 
 import { BookingsManager } from "@/components/admin/BookingsManager";
 import { HeroMediaManager } from "@/components/admin/HeroMediaManager";
+import { DanceBookingsManager } from "@/components/admin/DanceBookingsManager";
 import { InviteCodesManager } from "@/components/admin/InviteCodesManager";
+import { MembersManager } from "@/components/admin/MembersManager";
 import { TicketTypesManager } from "@/components/admin/TicketTypesManager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { canAccess, SECTIONS, type AppRole, type SectionKey } from "@/lib/roles";
 import { formatEventDate, formatNaira } from "@/lib/site";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -77,7 +80,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: hasAnyRole,
   });
 
   const orders = useQuery({
@@ -90,7 +93,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("tickets"),
   });
 
   const bookings = useQuery({
@@ -103,7 +106,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("bookings"),
   });
 
   const enquiries = useQuery({
@@ -116,7 +119,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("enquiries"),
   });
 
   const subscribers = useQuery({
@@ -129,7 +132,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("audience"),
   });
 
   const testimonials = useQuery({
@@ -142,7 +145,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("content"),
   });
 
   const media = useQuery({
@@ -152,7 +155,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("content"),
   });
 
   const invalidate = (key: string) =>
