@@ -6,7 +6,9 @@ import { toast } from "sonner";
 
 import { BookingsManager } from "@/components/admin/BookingsManager";
 import { HeroMediaManager } from "@/components/admin/HeroMediaManager";
+import { DanceBookingsManager } from "@/components/admin/DanceBookingsManager";
 import { InviteCodesManager } from "@/components/admin/InviteCodesManager";
+import { MembersManager } from "@/components/admin/MembersManager";
 import { TicketTypesManager } from "@/components/admin/TicketTypesManager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { canAccess, SECTIONS, type AppRole, type SectionKey } from "@/lib/roles";
 import { formatEventDate, formatNaira } from "@/lib/site";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -54,13 +57,21 @@ function AdminPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: isAdmin, isLoading: roleLoading } = useQuery({
-    queryKey: ["is-admin"],
+  const { data: me, isLoading: roleLoading } = useQuery({
+    queryKey: ["my-roles"],
     queryFn: async () => {
-      const { data } = await supabase.from("user_roles").select("role").eq("role", "admin");
-      return (data?.length ?? 0) > 0;
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData.user?.id;
+      const { data } = await supabase.from("user_roles").select("role");
+      return { userId, roles: (data ?? []).map((r) => r.role as AppRole) };
     },
   });
+
+  const roles = me?.roles ?? [];
+  const isAdmin = roles.includes("admin");
+  const hasAnyRole = roles.length > 0;
+  const can = (section: SectionKey) => canAccess(roles, section);
+
 
   const events = useQuery({
     queryKey: ["admin", "events"],
@@ -69,7 +80,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: hasAnyRole,
   });
 
   const orders = useQuery({
@@ -82,7 +93,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("tickets"),
   });
 
   const bookings = useQuery({
@@ -95,7 +106,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("bookings"),
   });
 
   const enquiries = useQuery({
@@ -108,7 +119,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("enquiries"),
   });
 
   const subscribers = useQuery({
@@ -121,7 +132,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("audience"),
   });
 
   const testimonials = useQuery({
@@ -134,7 +145,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("content"),
   });
 
   const media = useQuery({
@@ -144,7 +155,7 @@ function AdminPage() {
       if (error) throw error;
       return data;
     },
-    enabled: Boolean(isAdmin),
+    enabled: can("content"),
   });
 
   const invalidate = (key: string) =>
@@ -161,13 +172,13 @@ function AdminPage() {
     return <div className="mx-auto max-w-7xl px-4 py-24 text-muted-foreground">Loading…</div>;
   }
 
-  if (!isAdmin) {
+  if (!hasAnyRole) {
     return (
       <div className="mx-auto max-w-xl px-4 py-24 text-center">
-        <h1 className="font-display text-4xl">Admin access required</h1>
+        <h1 className="font-display text-4xl">Waiting for access</h1>
         <p className="mt-3 text-muted-foreground">
-          Your account is signed in but has no admin role yet. Ask an existing admin to grant you
-          access.
+          Your account is created, but an admin hasn't given you a role yet. Once they assign you a
+          section — tickets, bookings, events and so on — it will show up here.
         </p>
         <Button onClick={signOut} variant="outline" className="mt-6 border-border">
           Sign out
@@ -183,12 +194,16 @@ function AdminPage() {
     .filter((o) => o.payment_status === "paid")
     .reduce((sum, o) => sum + o.quantity, 0);
 
+  const visibleSections = SECTIONS.filter((s) => can(s.key));
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs tracking-[0.3em] text-accent">CONTROL ROOM</p>
-          <h1 className="mt-1 font-display text-4xl">Admin dashboard</h1>
+          <h1 className="mt-1 font-display text-4xl">
+            {isAdmin ? "Admin dashboard" : "Team dashboard"}
+          </h1>
         </div>
         <Button variant="outline" className="border-border" onClick={signOut}>
           <LogOut className="mr-2 h-4 w-4" /> Sign out
@@ -196,280 +211,326 @@ function AdminPage() {
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={TrendingUp} label="Confirmed revenue" value={formatNaira(paidRevenue)} />
-        <Stat icon={Ticket} label="Tickets sold" value={String(ticketsSold)} />
-        <Stat icon={Inbox} label="Booking requests" value={String(bookings.data?.length ?? 0)} />
-        <Stat icon={Mail} label="Mailing list" value={String(subscribers.data?.length ?? 0)} />
+        {can("tickets") ? (
+          <>
+            <Stat icon={TrendingUp} label="Confirmed revenue" value={formatNaira(paidRevenue)} />
+            <Stat icon={Ticket} label="Tickets sold" value={String(ticketsSold)} />
+          </>
+        ) : null}
+        {can("bookings") ? (
+          <Stat
+            icon={Inbox}
+            label="Booking requests"
+            value={String(bookings.data?.length ?? 0)}
+          />
+        ) : null}
+        {can("audience") ? (
+          <Stat icon={Mail} label="Mailing list" value={String(subscribers.data?.length ?? 0)} />
+        ) : null}
       </div>
 
-      <Tabs defaultValue="events" className="mt-10">
+
+      <Tabs defaultValue={visibleSections[0]?.key ?? "events"} className="mt-10">
         <TabsList className="flex h-auto flex-wrap justify-start">
-          {["events", "tickets", "bookings", "enquiries", "content", "audience", "homepage", "access"].map((t) => (
-            <TabsTrigger key={t} value={t} className="capitalize">
-              {t}
+          {visibleSections.map((t) => (
+            <TabsTrigger key={t.key} value={t.key} className="capitalize">
+              {t.key}
             </TabsTrigger>
           ))}
         </TabsList>
 
+
         {/* EVENTS */}
-        <TabsContent value="events" className="space-y-8 pt-6">
-          <NewEventForm onCreated={() => invalidate("events")} />
-          <Panel title="All events">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Event</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Regular</TableHead>
-                  <TableHead>Published</TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(events.data ?? []).map((e) => (
-                  <TableRow key={e.id}>
-                    <TableCell className="font-medium">{e.title}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {formatEventDate(e.starts_at)}
-                    </TableCell>
-                    <TableCell>{formatNaira(Number(e.price_regular))}</TableCell>
-                    <TableCell>
-                      <Switch
-                        checked={e.is_published}
-                        onCheckedChange={async (v) => {
-                          await supabase
-                            .from("events")
-                            .update({ is_published: v })
-                            .eq("id", e.id);
-                          invalidate("events");
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-destructive"
-                        onClick={async () => {
-                          await supabase.from("events").delete().eq("id", e.id);
-                          invalidate("events");
-                          toast.success("Event deleted");
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
+        {can("events") ? (
+  <TabsContent value="events" className="space-y-8 pt-6">
+            <NewEventForm onCreated={() => invalidate("events")} />
+            <Panel title="All events">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Event</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Regular</TableHead>
+                    <TableHead>Published</TableHead>
+                    <TableHead />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Panel>
-        </TabsContent>
+                </TableHeader>
+                <TableBody>
+                  {(events.data ?? []).map((e) => (
+                    <TableRow key={e.id}>
+                      <TableCell className="font-medium">{e.title}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {formatEventDate(e.starts_at)}
+                      </TableCell>
+                      <TableCell>{formatNaira(Number(e.price_regular))}</TableCell>
+                      <TableCell>
+                        <Switch
+                          checked={e.is_published}
+                          onCheckedChange={async (v) => {
+                            await supabase
+                              .from("events")
+                              .update({ is_published: v })
+                              .eq("id", e.id);
+                            invalidate("events");
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive"
+                          onClick={async () => {
+                            await supabase.from("events").delete().eq("id", e.id);
+                            invalidate("events");
+                            toast.success("Event deleted");
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Panel>
+          </TabsContent>
+        ) : null}
 
         {/* TICKETS */}
-        <TabsContent value="tickets" className="space-y-8 pt-6">
-          <Panel title="Ticket types & pricing">
-            <TicketTypesManager
-              events={(events.data ?? []).map((e) => ({
-                id: e.id,
-                title: e.title,
-                starts_at: e.starts_at,
-              }))}
-            />
-          </Panel>
-          <Panel title="Ticket orders">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Ref</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Event</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(orders.data ?? []).map((o) => (
-                  <TableRow key={o.id}>
-                    <TableCell className="font-mono text-xs">{o.reference}</TableCell>
-                    <TableCell>
-                      {o.customer_name}
-                      <span className="block text-xs text-muted-foreground">{o.phone}</span>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {(o.events as { title: string } | null)?.title ?? "—"}
-                    </TableCell>
-                    <TableCell>
-                      {o.quantity} × {o.ticket_type}
-                    </TableCell>
-                    <TableCell>{formatNaira(Number(o.amount_total))}</TableCell>
-                    <TableCell>
-                      <StatusSelect
-                        value={o.payment_status}
-                        options={["pending", "paid", "cancelled", "refunded", "checked_in"]}
-                        onChange={async (v) => {
-                          await supabase
-                            .from("ticket_orders")
-                            .update({ payment_status: v })
-                            .eq("id", o.id);
-                          invalidate("orders");
-                        }}
-                      />
-                    </TableCell>
+        {can("tickets") ? (
+  <TabsContent value="tickets" className="space-y-8 pt-6">
+            <Panel title="Ticket types & pricing">
+              <TicketTypesManager
+                events={(events.data ?? []).map((e) => ({
+                  id: e.id,
+                  title: e.title,
+                  starts_at: e.starts_at,
+                }))}
+              />
+            </Panel>
+            <Panel title="Ticket orders">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ref</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Event</TableHead>
+                    <TableHead>Qty</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Panel>
-        </TabsContent>
+                </TableHeader>
+                <TableBody>
+                  {(orders.data ?? []).map((o) => (
+                    <TableRow key={o.id}>
+                      <TableCell className="font-mono text-xs">{o.reference}</TableCell>
+                      <TableCell>
+                        {o.customer_name}
+                        <span className="block text-xs text-muted-foreground">{o.phone}</span>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {(o.events as { title: string } | null)?.title ?? "—"}
+                      </TableCell>
+                      <TableCell>
+                        {o.quantity} × {o.ticket_type}
+                      </TableCell>
+                      <TableCell>{formatNaira(Number(o.amount_total))}</TableCell>
+                      <TableCell>
+                        <StatusSelect
+                          value={o.payment_status}
+                          options={["pending", "paid", "cancelled", "refunded", "checked_in"]}
+                          onChange={async (v) => {
+                            await supabase
+                              .from("ticket_orders")
+                              .update({ payment_status: v })
+                              .eq("id", o.id);
+                            invalidate("orders");
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Panel>
+          </TabsContent>
+        ) : null}
 
         {/* BOOKINGS */}
-        <TabsContent value="bookings" className="pt-6">
-          <Panel title="Booking requests">
-            <BookingsManager />
-          </Panel>
-        </TabsContent>
+        {can("bookings") ? (
+  <TabsContent value="bookings" className="pt-6">
+            <Panel title="Booking requests">
+              <BookingsManager />
+            </Panel>
+          </TabsContent>
+        ) : null}
 
 
         {/* ENQUIRIES */}
-        <TabsContent value="enquiries" className="pt-6">
-          <Panel title="Enquiries">
-            <div className="space-y-4">
-              {(enquiries.data ?? []).map((e) => (
-                <div key={e.id} className="rounded-xl border border-border p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="font-semibold">
-                      {e.full_name}{" "}
-                      <span className="text-xs font-normal text-muted-foreground">{e.email}</span>
-                    </p>
-                    <StatusSelect
-                      value={e.status}
-                      options={["new", "in_progress", "resolved"]}
-                      onChange={async (v) => {
-                        await supabase.from("enquiries").update({ status: v }).eq("id", e.id);
-                        invalidate("enquiries");
-                      }}
-                    />
+        {can("enquiries") ? (
+  <TabsContent value="enquiries" className="pt-6">
+            <Panel title="Enquiries">
+              <div className="space-y-4">
+                {(enquiries.data ?? []).map((e) => (
+                  <div key={e.id} className="rounded-xl border border-border p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="font-semibold">
+                        {e.full_name}{" "}
+                        <span className="text-xs font-normal text-muted-foreground">{e.email}</span>
+                      </p>
+                      <StatusSelect
+                        value={e.status}
+                        options={["new", "in_progress", "resolved"]}
+                        onChange={async (v) => {
+                          await supabase.from("enquiries").update({ status: v }).eq("id", e.id);
+                          invalidate("enquiries");
+                        }}
+                      />
+                    </div>
+                    {e.subject && <p className="mt-1 text-sm text-accent">{e.subject}</p>}
+                    <p className="mt-2 text-sm text-muted-foreground">{e.message}</p>
                   </div>
-                  {e.subject && <p className="mt-1 text-sm text-accent">{e.subject}</p>}
-                  <p className="mt-2 text-sm text-muted-foreground">{e.message}</p>
-                </div>
-              ))}
-              {enquiries.data?.length === 0 && (
-                <p className="text-muted-foreground">No enquiries yet.</p>
-              )}
-            </div>
-          </Panel>
-        </TabsContent>
+                ))}
+                {enquiries.data?.length === 0 && (
+                  <p className="text-muted-foreground">No enquiries yet.</p>
+                )}
+              </div>
+            </Panel>
+          </TabsContent>
+        ) : null}
 
         {/* CONTENT */}
-        <TabsContent value="content" className="space-y-8 pt-6">
-          <NewMediaForm onCreated={() => invalidate("media")} />
-          <Panel title="Gallery items">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {(media.data ?? []).map((m) => (
-                <div
-                  key={m.id}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border p-3"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{m.title}</p>
-                    <p className="text-xs capitalize text-muted-foreground">{m.media_type}</p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-destructive"
-                    onClick={async () => {
-                      await supabase.from("media").delete().eq("id", m.id);
-                      invalidate("media");
-                    }}
+        {can("content") ? (
+  <TabsContent value="content" className="space-y-8 pt-6">
+            <NewMediaForm onCreated={() => invalidate("media")} />
+            <Panel title="Gallery items">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {(media.data ?? []).map((m) => (
+                  <div
+                    key={m.id}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-border p-3"
                   >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-              {media.data?.length === 0 && (
-                <p className="text-muted-foreground">No gallery items added yet.</p>
-              )}
-            </div>
-          </Panel>
-
-          <Panel title="Testimonials">
-            <div className="space-y-3">
-              {(testimonials.data ?? []).map((t) => (
-                <div
-                  key={t.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-4"
-                >
-                  <div>
-                    <p className="font-semibold">
-                      {t.author_name}{" "}
-                      <span className="text-xs font-normal text-muted-foreground">
-                        {t.author_role}
-                      </span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">{t.message}</p>
-                  </div>
-                  <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                    Approved
-                    <Switch
-                      checked={t.is_approved}
-                      onCheckedChange={async (v) => {
-                        await supabase
-                          .from("testimonials")
-                          .update({ is_approved: v })
-                          .eq("id", t.id);
-                        invalidate("testimonials");
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{m.title}</p>
+                      <p className="text-xs capitalize text-muted-foreground">{m.media_type}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-destructive"
+                      onClick={async () => {
+                        await supabase.from("media").delete().eq("id", m.id);
+                        invalidate("media");
                       }}
-                    />
-                  </label>
-                </div>
-              ))}
-            </div>
-          </Panel>
-        </TabsContent>
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                {media.data?.length === 0 && (
+                  <p className="text-muted-foreground">No gallery items added yet.</p>
+                )}
+              </div>
+            </Panel>
+
+            <Panel title="Testimonials">
+              <div className="space-y-3">
+                {(testimonials.data ?? []).map((t) => (
+                  <div
+                    key={t.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-4"
+                  >
+                    <div>
+                      <p className="font-semibold">
+                        {t.author_name}{" "}
+                        <span className="text-xs font-normal text-muted-foreground">
+                          {t.author_role}
+                        </span>
+                      </p>
+                      <p className="text-sm text-muted-foreground">{t.message}</p>
+                    </div>
+                    <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                      Approved
+                      <Switch
+                        checked={t.is_approved}
+                        onCheckedChange={async (v) => {
+                          await supabase
+                            .from("testimonials")
+                            .update({ is_approved: v })
+                            .eq("id", t.id);
+                          invalidate("testimonials");
+                        }}
+                      />
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </TabsContent>
+        ) : null}
 
         {/* AUDIENCE */}
-        <TabsContent value="audience" className="pt-6">
-          <Panel title="Mailing list">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Joined</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(subscribers.data ?? []).map((s) => (
-                  <TableRow key={s.id}>
-                    <TableCell>{s.email}</TableCell>
-                    <TableCell className="text-muted-foreground">{s.phone ?? "—"}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(s.created_at).toLocaleDateString("en-NG")}
-                    </TableCell>
+        {can("audience") ? (
+  <TabsContent value="audience" className="pt-6">
+            <Panel title="Mailing list">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Joined</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Panel>
-        </TabsContent>
+                </TableHeader>
+                <TableBody>
+                  {(subscribers.data ?? []).map((s) => (
+                    <TableRow key={s.id}>
+                      <TableCell>{s.email}</TableCell>
+                      <TableCell className="text-muted-foreground">{s.phone ?? "—"}</TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {new Date(s.created_at).toLocaleDateString("en-NG")}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Panel>
+          </TabsContent>
+        ) : null}
 
         {/* HOMEPAGE */}
-        <TabsContent value="homepage" className="pt-6">
-          <Panel title="Hero background">
-            <HeroMediaManager />
-          </Panel>
-        </TabsContent>
+        {can("homepage") ? (
+  <TabsContent value="homepage" className="pt-6">
+            <Panel title="Hero background">
+              <HeroMediaManager />
+            </Panel>
+          </TabsContent>
+        ) : null}
 
         {/* ACCESS */}
-        <TabsContent value="access" className="pt-6">
-          <Panel title="Registration invite codes">
-            <InviteCodesManager />
-          </Panel>
-        </TabsContent>
+        {can("dance") ? (
+          <TabsContent value="dance" className="pt-6">
+            <Panel title="Dance team bookings">
+              <DanceBookingsManager />
+            </Panel>
+          </TabsContent>
+        ) : null}
+
+        {can("team") ? (
+          <TabsContent value="team" className="pt-6">
+            <Panel title="Team members & roles">
+              <MembersManager currentUserId={me?.userId} />
+            </Panel>
+          </TabsContent>
+        ) : null}
+
+        {can("access") ? (
+  <TabsContent value="access" className="pt-6">
+            <Panel title="Registration invite codes">
+              <InviteCodesManager />
+            </Panel>
+          </TabsContent>
+        ) : null}
       </Tabs>
     </div>
   );
