@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Instagram, Mail, MapPin, Music2, Phone, Twitter, Youtube } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -6,9 +7,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { SITE } from "@/lib/site";
+import { DEFAULT_CONTACT, contactInfoQuery } from "@/lib/site-settings";
 
 export function Footer() {
+  const { data: contact } = useQuery(contactInfoQuery);
+  const SITE_CONTACT = contact ?? DEFAULT_CONTACT;
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -81,21 +84,21 @@ export function Footer() {
           <h3 className="text-sm tracking-[0.2em] text-muted-foreground">REACH US</h3>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-primary" /> {SITE.phone}
+              <Phone className="h-4 w-4 text-primary" /> {SITE_CONTACT.phone}
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-primary" /> {SITE.email}
+              <Mail className="h-4 w-4 text-primary" /> {SITE_CONTACT.email}
             </li>
             <li className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" /> {SITE.city}
+              <MapPin className="h-4 w-4 text-primary" /> {SITE_CONTACT.city}
             </li>
           </ul>
           <div className="mt-5 flex gap-3">
             {[
-              { href: SITE.socials.instagram, Icon: Instagram, label: "Instagram" },
-              { href: SITE.socials.tiktok, Icon: Music2, label: "TikTok" },
-              { href: SITE.socials.x, Icon: Twitter, label: "X" },
-              { href: SITE.socials.youtube, Icon: Youtube, label: "YouTube" },
+              { href: SITE_CONTACT.instagram, Icon: Instagram, label: "Instagram" },
+              { href: SITE_CONTACT.tiktok, Icon: Music2, label: "TikTok" },
+              { href: SITE_CONTACT.x, Icon: Twitter, label: "X" },
+              { href: SITE_CONTACT.youtube, Icon: Youtube, label: "YouTube" },
             ].map(({ href, Icon, label }) => (
               <a
                 key={label}
@@ -112,7 +115,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} {SITE.name}. Lagos • Abuja • Port Harcourt.
+        © {new Date().getFullYear()} Epic Entertainment. Lagos • Abuja • Port Harcourt.
       </div>
     </footer>
   );
