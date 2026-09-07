@@ -7,13 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { HERO_MEDIA_KEY, heroMediaQuery, type HeroMedia } from "@/lib/site-settings";
+import { HERO_MEDIA_KEY, mediaQuery, type HeroMedia } from "@/lib/site-settings";
 
 const TEN_YEARS = 60 * 60 * 24 * 365 * 10;
 
-export function HeroMediaManager() {
+export function HeroMediaManager({ settingsKey = HERO_MEDIA_KEY, folder = "hero" }: { settingsKey?: string; folder?: string } = {}) {
   const queryClient = useQueryClient();
-  const { data: current } = useQuery(heroMediaQuery);
+  const query = mediaQuery(settingsKey);
+  const { data: current } = useQuery(query);
   const [urlInput, setUrlInput] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -21,9 +22,9 @@ export function HeroMediaManager() {
   async function save(next: HeroMedia | { type: "image"; url: "" }) {
     const { error } = await supabase
       .from("site_settings")
-      .upsert({ key: HERO_MEDIA_KEY, value: next, updated_at: new Date().toISOString() });
+      .upsert({ key: settingsKey, value: next, updated_at: new Date().toISOString() });
     if (error) throw error;
-    await queryClient.invalidateQueries({ queryKey: heroMediaQuery.queryKey });
+    await queryClient.invalidateQueries({ queryKey: query.queryKey });
   }
 
   async function handleFile(file: File) {
@@ -39,7 +40,7 @@ export function HeroMediaManager() {
     }
     setBusy(true);
     try {
-      const path = `hero/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
+      const path = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
       const { error: upErr } = await supabase.storage
         .from("site-media")
         .upload(path, file, { upsert: true, contentType: file.type });

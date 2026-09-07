@@ -1,16 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { heroMediaQuery } from "@/lib/site-settings";
+import { HERO_MEDIA_KEY, mediaQuery } from "@/lib/site-settings";
 
 type Props = {
   fallbackSrc: string;
   alt: string;
   className?: string;
+  settingsKey?: string;
 };
 
-/** Homepage hero background — admin-managed image or video, with a bundled fallback. */
-export function HeroBackground({ fallbackSrc, alt, className }: Props) {
-  const { data } = useQuery(heroMediaQuery);
+/** Hero background — admin-managed image or video, with a bundled fallback. */
+export function HeroBackground({ fallbackSrc, alt, className, settingsKey }: Props) {
+  const { data } = useQuery(mediaQuery(settingsKey ?? HERO_MEDIA_KEY));
   const cls = className ?? "absolute inset-0 h-full w-full object-cover opacity-60";
 
   if (data?.type === "video") {

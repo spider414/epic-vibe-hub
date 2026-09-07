@@ -3,9 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Music4, Sparkles, Users } from "lucide-react";
 
 import danceImg from "@/assets/dance-team.jpg";
+import { HeroBackground } from "@/components/site/HeroBackground";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNaira } from "@/lib/site";
+import { DANCE_HERO_MEDIA_KEY } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/dance")({
   head: () => ({
@@ -57,11 +59,10 @@ function DancePage() {
   return (
     <div>
       <section className="relative isolate overflow-hidden">
-        <img
-          src={danceImg}
+        <HeroBackground
+          fallbackSrc={danceImg}
           alt="Creative Dance Team performing on stage"
-          width={1600}
-          height={1008}
+          settingsKey={DANCE_HERO_MEDIA_KEY}
           className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
         <div className="absolute inset-0 night-fade" />
