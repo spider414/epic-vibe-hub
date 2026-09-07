@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { SITE } from "@/lib/site";
 
 export type HeroMedia = { type: "image" | "video"; url: string };
 
@@ -22,8 +23,6 @@ export const heroMediaQuery = {
 };
 
 // ---------- Contact / social details (admin editable) ----------
-
-import { SITE } from "@/lib/site";
 
 export type ContactInfo = {
   phone: string;
