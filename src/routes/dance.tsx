@@ -3,9 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Music4, Sparkles, Users } from "lucide-react";
 
 import danceImg from "@/assets/dance-team.jpg";
+import { HeroBackground } from "@/components/site/HeroBackground";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNaira } from "@/lib/site";
+import { DANCE_HERO_MEDIA_KEY } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/dance")({
   head: () => ({
