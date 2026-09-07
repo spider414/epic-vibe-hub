@@ -5,7 +5,9 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { BookingsManager } from "@/components/admin/BookingsManager";
+import { ContactInfoManager } from "@/components/admin/ContactInfoManager";
 import { HeroMediaManager } from "@/components/admin/HeroMediaManager";
+
 import { DanceBookingsManager } from "@/components/admin/DanceBookingsManager";
 import { InviteCodesManager } from "@/components/admin/InviteCodesManager";
 import { MembersManager } from "@/components/admin/MembersManager";
@@ -504,6 +506,10 @@ function AdminPage() {
             <Panel title="Hero background">
               <HeroMediaManager />
             </Panel>
+            <Panel title="Contact & social links">
+              <ContactInfoManager />
+            </Panel>
+
           </TabsContent>
         ) : null}
 

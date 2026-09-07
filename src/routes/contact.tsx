@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Instagram, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { SITE } from "@/lib/site";
+import { DEFAULT_CONTACT, contactInfoQuery } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -39,6 +40,8 @@ const schema = z.object({
 });
 
 function ContactPage() {
+  const { data: contactData } = useQuery(contactInfoQuery);
+  const SITE_CONTACT = contactData ?? DEFAULT_CONTACT;
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
@@ -82,21 +85,21 @@ function ContactPage() {
       <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_1.2fr]">
         <div className="space-y-6">
           {[
-            { Icon: Phone, label: "Call us", value: SITE.phone, href: `tel:${SITE.phone}` },
+            { Icon: Phone, label: "Call us", value: SITE_CONTACT.phone, href: `tel:${SITE_CONTACT.phone}` },
             {
               Icon: MessageCircle,
               label: "WhatsApp",
               value: "Chat with the team",
-              href: `https://wa.me/${SITE.whatsapp}`,
+              href: `https://wa.me/${SITE_CONTACT.whatsapp}`,
             },
-            { Icon: Mail, label: "Email", value: SITE.email, href: `mailto:${SITE.email}` },
+            { Icon: Mail, label: "Email", value: SITE_CONTACT.email, href: `mailto:${SITE_CONTACT.email}` },
             {
               Icon: Instagram,
               label: "Instagram",
               value: "@epicentertainment",
-              href: SITE.socials.instagram,
+              href: SITE_CONTACT.instagram,
             },
-            { Icon: MapPin, label: "Based in", value: SITE.city },
+            { Icon: MapPin, label: "Based in", value: SITE_CONTACT.city },
           ].map((c) => (
             <div key={c.label} className="card-elevated flex items-start gap-4 rounded-2xl p-5">
               <c.Icon className="mt-0.5 h-5 w-5 text-primary" />
