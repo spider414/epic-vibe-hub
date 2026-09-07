@@ -4,12 +4,13 @@ import { SITE } from "@/lib/site";
 export type HeroMedia = { type: "image" | "video"; url: string };
 
 export const HERO_MEDIA_KEY = "hero_media";
+export const DANCE_HERO_MEDIA_KEY = "dance_hero_media";
 
-export async function fetchHeroMedia(): Promise<HeroMedia | null> {
+export async function fetchMedia(key: string): Promise<HeroMedia | null> {
   const { data, error } = await supabase
     .from("site_settings")
     .select("value")
-    .eq("key", HERO_MEDIA_KEY)
+    .eq("key", key)
     .maybeSingle();
   if (error) throw error;
   const value = (data?.value ?? null) as HeroMedia | null;
@@ -17,10 +18,16 @@ export async function fetchHeroMedia(): Promise<HeroMedia | null> {
   return { type: value.type === "video" ? "video" : "image", url: value.url };
 }
 
-export const heroMediaQuery = {
-  queryKey: ["site-settings", HERO_MEDIA_KEY],
-  queryFn: fetchHeroMedia,
-};
+export function mediaQuery(key: string) {
+  return {
+    queryKey: ["site-settings", key],
+    queryFn: () => fetchMedia(key),
+  };
+}
+
+export const fetchHeroMedia = () => fetchMedia(HERO_MEDIA_KEY);
+
+export const heroMediaQuery = mediaQuery(HERO_MEDIA_KEY);
 
 // ---------- Contact / social details (admin editable) ----------
 
