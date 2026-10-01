@@ -25,6 +25,6 @@ export default defineConfig({
       : {}),
   },
   // Only applied when BUILD_TARGET=node; otherwise the default preset is used.
-  ...(nodeBuild ? { nitro: { preset: "node-server" } } : {}),
-  ...(staticBuild ? { nitro: { preset: "node-server" } } : {}),
+  ...(nodeBuild ? X
+  ...(staticBuild ? X
 });
