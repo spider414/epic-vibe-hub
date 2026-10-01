@@ -11,14 +11,20 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 //   bun run build:node   → Node.js server bundle in .output/ for self-hosting
 //                          (e.g. Spaceship Node hosting). Run it on your own
 //                          machine or CI after cloning the GitHub repo.
+//   bun run build:static → static SPA (index.html + assets) for plain file hosting.
 const nodeBuild = process.env["BUILD_TARGET"] === "node";
+const staticBuild = process.env["BUILD_TARGET"] === "static";
 
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
-    server: { entry: "server" },
+    ...(staticBuild ? {} : { server: { entry: "server" } }),
+    ...(staticBuild
+      ? { spa: { enabled: true, prerender: { outputPath: "/index.html" } } }
+      : {}),
   },
   // Only applied when BUILD_TARGET=node; otherwise the default preset is used.
   ...(nodeBuild ? { nitro: { preset: "node-server" } } : {}),
+  ...(staticBuild ? { nitro: false } : {}),
 });
