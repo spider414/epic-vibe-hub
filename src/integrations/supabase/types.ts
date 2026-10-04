@@ -468,6 +468,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_type: string
           created_at: string
           email: string | null
           full_name: string | null
@@ -476,6 +477,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          account_type?: string
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -484,6 +486,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          account_type?: string
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -805,6 +808,7 @@ export type Database = {
           expires_at: string
         }[]
       }
+      get_my_activity: { Args: never; Returns: Json }
       get_order_by_token: { Args: { _token: string }; Returns: Json }
       has_role: {
         Args: {
