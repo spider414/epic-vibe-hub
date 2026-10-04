@@ -10,18 +10,22 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { lovable } from "@/integrations/lovable";
 import { supabase } from "@/integrations/supabase/client";
+import { homeForCurrentUser } from "@/lib/account";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — Epic Entertainment Team Dashboard" },
+      { title: "Sign in — Epic Entertainment" },
       {
         name: "description",
         content:
-          "Sign in to the Epic Entertainment dashboard to manage events, tickets, bookings and content.",
+          "Sign in to Epic Entertainment to see your tickets and bookings, or access the team dashboard.",
       },
       { property: "og:title", content: "Sign in — Epic Entertainment" },
-      { property: "og:description", content: "Team access to the Epic Entertainment dashboard." },
+      { property: "og:description", content: "Guest and team sign-in for Epic Entertainment." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -35,6 +39,7 @@ const credsSchema = z.object({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<"guest" | "team">("guest");
   const [busy, setBusy] = useState(false);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -45,7 +50,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/admin", replace: true });
+      if (data.session) homeForCurrentUser().then((to) => navigate({ to, replace: true }));
     });
   }, [navigate]);
 
@@ -94,7 +99,7 @@ function AuthPage() {
       toast.error(error.message);
       return;
     }
-    navigate({ to: "/admin", replace: true });
+    navigate({ to: await homeForCurrentUser(), replace: true });
   }
 
   async function signUp(e: React.FormEvent) {
@@ -104,7 +109,7 @@ function AuthPage() {
       toast.error(parsed.error.issues[0]!.message);
       return;
     }
-    if (parsed.data.email.toLowerCase() !== inviteEmail.trim().toLowerCase()) {
+    if (mode === "team" && parsed.data.email.toLowerCase() !== inviteEmail.trim().toLowerCase()) {
       toast.error("Use the same email the invite code was verified with.");
       return;
     }
@@ -132,7 +137,7 @@ function AuthPage() {
     }
 
     if (data.session) {
-      navigate({ to: "/admin", replace: true });
+      navigate({ to: await homeForCurrentUser(), replace: true });
       return;
     }
     toast.success("Check your email to confirm your account.");
@@ -147,20 +152,42 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: "/admin", replace: true });
+    navigate({ to: await homeForCurrentUser(), replace: true });
   }
 
   return (
     <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-20">
       <h1 className="font-display text-4xl">
-        Team <span className="text-hype">access</span>
+        {mode === "guest" ? (
+          <>My <span className="text-hype">account</span></>
+        ) : (
+          <>Team <span className="text-hype">access</span></>
+        )}
       </h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Sign in to manage events, tickets, bookings and content.
+        {mode === "guest"
+          ? "Sign in or create a free account to see your tickets and bookings."
+          : "Sign in to manage events, tickets, bookings and content."}
       </p>
 
+      <div className="mt-6 grid grid-cols-2 gap-1 rounded-2xl border border-border bg-muted/30 p-1">
+        {(["guest", "team"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMode(m)}
+            className={cn(
+              "rounded-xl py-2.5 text-sm font-medium transition-colors",
+              mode === m ? "bg-hype text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            {m === "guest" ? "Guest" : "Team member"}
+          </button>
+        ))}
+      </div>
+
       <div className="card-elevated mt-8 rounded-3xl p-6">
-        <Tabs defaultValue="signin">
+        <Tabs defaultValue="signin" key={mode}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Sign in</TabsTrigger>
             <TabsTrigger value="signup">Create account</TabsTrigger>
@@ -179,7 +206,7 @@ function AuthPage() {
           </TabsContent>
 
           <TabsContent value="signup">
-            {!inviteUnlocked ? (
+            {mode === "team" && !inviteUnlocked ? (
               <form onSubmit={unlockRegistration} className="space-y-4 pt-4">
                 <p className="rounded-2xl border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
                   Registration is invite-only. Ask an admin to generate a 6-digit code in the
@@ -240,7 +267,7 @@ function AuthPage() {
 
         </Tabs>
 
-        {inviteUnlocked && (
+        {(mode === "guest" || inviteUnlocked) && (
           <>
             <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground">
               <span className="h-px flex-1 bg-border" /> OR <span className="h-px flex-1 bg-border" />
