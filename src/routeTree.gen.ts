@@ -20,6 +20,7 @@ import { Route as CreativeDanceTeamRouteImport } from './routes/creative-dance-t
 import { Route as DanceRouteImport } from './routes/dance'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as EventsIndexRouteImport } from './routes/events.index'
 import { Route as EventsSlugRouteImport } from './routes/events.$slug'
@@ -80,6 +81,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tickets/$token': typeof TicketsTokenRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tickets/$token': typeof TicketsTokenRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
   '/services': typeof ServicesRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/events/$slug': typeof EventsSlugRoute
   '/tickets/$token': typeof TicketsTokenRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/dance'
     | '/gallery'
     | '/services'
+    | '/account'
     | '/admin'
     | '/events/$slug'
     | '/tickets/$token'
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/dance'
     | '/gallery'
     | '/services'
+    | '/account'
     | '/admin'
     | '/events/$slug'
     | '/tickets/$token'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/dance'
     | '/gallery'
     | '/services'
+    | '/_authenticated/account'
     | '/_authenticated/admin'
     | '/events/$slug'
     | '/tickets/$token'
@@ -312,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -351,10 +370,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
 }
 
