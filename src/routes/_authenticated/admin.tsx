@@ -65,7 +65,18 @@ function AdminPage() {
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
       const { data } = await supabase.from("user_roles").select("role");
-      return { userId, roles: (data ?? []).map((r) => r.role as AppRole) };
+      const roles = (data ?? []).map((r) => r.role as AppRole);
+      if (roles.length === 0 && userId) {
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("account_type" as never)
+          .eq("id", userId)
+          .maybeSingle();
+        if ((prof as { account_type?: string } | null)?.account_type === "guest") {
+          navigate({ to: "/account", replace: true });
+        }
+      }
+      return { userId, roles };
     },
   });
 

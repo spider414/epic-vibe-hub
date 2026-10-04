@@ -41,6 +41,7 @@ export function MembersManager({ currentUserId }: { currentUserId: string | unde
         supabase
           .from("profiles")
           .select("id, full_name, email, phone, created_at")
+          .eq("account_type" as never, "team" as never)
           .order("created_at", { ascending: false }),
         supabase.from("user_roles").select("id, user_id, role"),
       ]);
