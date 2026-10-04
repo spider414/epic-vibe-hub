@@ -70,7 +70,7 @@ function AccountPage() {
     navigate({ to: "/", replace: true });
   }
 
-  const name = (user?.user_metadata?.full_name as string | undefined) || user?.email;
+  const name = (user?.user_metadata?.["full_name"] as string | undefined) || user?.email;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
