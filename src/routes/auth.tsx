@@ -265,6 +265,7 @@ function EmailPassword({
   password: string;
   setPassword: (v: string) => void;
 }) {
+  const [show, setShow] = useState(false);
   return (
     <>
       <div className="space-y-2">
@@ -280,15 +281,26 @@ function EmailPassword({
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          required
-          minLength={8}
-          maxLength={72}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            type={show ? "text" : "password"}
+            required
+            minLength={8}
+            maxLength={72}
+            className="pr-11"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            type="button"
+            onClick={() => setShow((v) => !v)}
+            aria-label={show ? "Hide password" : "Show password"}
+            className="absolute inset-y-0 right-0 grid w-10 place-items-center text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
     </>
   );
