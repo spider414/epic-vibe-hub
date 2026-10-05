@@ -223,6 +223,29 @@ function AuthPage() {
               >
                 {busy ? "Signing in…" : "Sign in"}
               </Button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const parsed = z.string().trim().email().safeParse(email);
+                  if (!parsed.success) {
+                    toast.error("Enter your email above first, then tap Forgot password.");
+                    return;
+                  }
+                  setBusy(true);
+                  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+                    redirectTo: `${window.location.origin}/reset-password`,
+                  });
+                  setBusy(false);
+                  if (error) {
+                    toast.error(error.message);
+                    return;
+                  }
+                  toast.success("If that email has an account, a reset link is on its way.");
+                }}
+                className="block w-full text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+              >
+                Forgot password?
+              </button>
             </form>
           </TabsContent>
 
