@@ -85,6 +85,20 @@ function AuthPage() {
   }
 
 
+  async function finishSignIn() {
+    const home = await homeForCurrentUser();
+    if (mode === "team") {
+      if (home !== "/admin") {
+        await supabase.auth.signOut();
+        toast.error("This email is not registered as a team member. Use the Guest tab instead.");
+        return;
+      }
+      navigate({ to: "/admin", replace: true });
+      return;
+    }
+    navigate({ to: "/account", replace: true });
+  }
+
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     const parsed = credsSchema.safeParse({ email, password });
@@ -99,7 +113,7 @@ function AuthPage() {
       toast.error(error.message);
       return;
     }
-    navigate({ to: await homeForCurrentUser(), replace: true });
+    await finishSignIn();
   }
 
   async function signUp(e: React.FormEvent) {
@@ -137,7 +151,7 @@ function AuthPage() {
     }
 
     if (data.session) {
-      navigate({ to: await homeForCurrentUser(), replace: true });
+      await finishSignIn();
       return;
     }
     toast.success("Check your email to confirm your account.");
@@ -152,7 +166,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: await homeForCurrentUser(), replace: true });
+    await finishSignIn();
   }
 
   return (
