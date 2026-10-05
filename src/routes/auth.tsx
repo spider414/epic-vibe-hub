@@ -50,7 +50,12 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) homeForCurrentUser().then((to) => navigate({ to, replace: true }));
+      if (!data.session) return;
+      if (localStorage.getItem("epic_login_mode") === "guest") {
+        navigate({ to: "/account", replace: true });
+        return;
+      }
+      homeForCurrentUser().then((to) => navigate({ to, replace: true }));
     });
   }, [navigate]);
 
@@ -93,9 +98,11 @@ function AuthPage() {
         toast.error("This email is not registered as a team member. Use the Guest tab instead.");
         return;
       }
+      localStorage.setItem("epic_login_mode", "team");
       navigate({ to: "/admin", replace: true });
       return;
     }
+    localStorage.setItem("epic_login_mode", "guest");
     navigate({ to: "/account", replace: true });
   }
 
