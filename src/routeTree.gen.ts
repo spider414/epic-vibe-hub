@@ -19,6 +19,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CreativeDanceTeamRouteImport } from './routes/creative-dance-team'
 import { Route as DanceRouteImport } from './routes/dance'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -76,6 +77,11 @@ const GalleryRoute = GalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/creative-dance-team': typeof CreativeDanceTeamRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/creative-dance-team': typeof CreativeDanceTeamRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/creative-dance-team': typeof CreativeDanceTeamRoute
   '/dance': typeof DanceRoute
   '/gallery': typeof GalleryRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/creative-dance-team'
     | '/dance'
     | '/gallery'
+    | '/reset-password'
     | '/services'
     | '/account'
     | '/admin'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/creative-dance-team'
     | '/dance'
     | '/gallery'
+    | '/reset-password'
     | '/services'
     | '/account'
     | '/admin'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/creative-dance-team'
     | '/dance'
     | '/gallery'
+    | '/reset-password'
     | '/services'
     | '/_authenticated/account'
     | '/_authenticated/admin'
@@ -238,6 +250,7 @@ export interface RootRouteChildren {
   CreativeDanceTeamRoute: typeof CreativeDanceTeamRoute
   DanceRoute: typeof DanceRoute
   GalleryRoute: typeof GalleryRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   EventsSlugRoute: typeof EventsSlugRoute
   TicketsTokenRoute: typeof TicketsTokenRoute
@@ -317,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -393,6 +413,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreativeDanceTeamRoute: CreativeDanceTeamRoute,
   DanceRoute: DanceRoute,
   GalleryRoute: GalleryRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   EventsSlugRoute: EventsSlugRoute,
   TicketsTokenRoute: TicketsTokenRoute,
