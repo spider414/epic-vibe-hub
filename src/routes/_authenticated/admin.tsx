@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { CalendarDays, Inbox, LogOut, Mail, Ticket, TrendingUp, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { BookingsManager } from "@/components/admin/BookingsManager";
@@ -80,6 +80,7 @@ function AdminPage() {
     },
   });
 
+  const [editingEvent, setEditingEvent] = useState<EditableEvent | null>(null);
   const roles = me?.roles ?? [];
   const isAdmin = roles.includes("admin");
   const hasAnyRole = roles.length > 0;
@@ -256,7 +257,14 @@ function AdminPage() {
         {/* EVENTS */}
         {can("events") ? (
   <TabsContent value="events" className="space-y-8 pt-6">
-            <NewEventForm onCreated={() => invalidate("events")} />
+            <NewEventForm
+              editing={editingEvent}
+              onCancel={() => setEditingEvent(null)}
+              onCreated={() => {
+                setEditingEvent(null);
+                invalidate("events");
+              }}
+            />
             <Panel title="All events">
               <Table>
                 <TableHeader>
@@ -271,7 +279,20 @@ function AdminPage() {
                 <TableBody>
                   {(events.data ?? []).map((e) => (
                     <TableRow key={e.id}>
-                      <TableCell className="font-medium">{e.title}</TableCell>
+                      <TableCell
+                        className="cursor-pointer font-medium hover:text-primary"
+                        onClick={() => {
+                          setEditingEvent(e);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
+                        <span className="flex items-center gap-3">
+                          {e.flyer_url && (
+                            <img src={e.flyer_url} alt="" className="h-10 w-10 rounded-lg object-cover" />
+                          )}
+                          {e.title}
+                        </span>
+                      </TableCell>
                       <TableCell className="text-muted-foreground">
                         {formatEventDate(e.starts_at)}
                       </TableCell>
@@ -289,6 +310,16 @@ function AdminPage() {
                         />
                       </TableCell>
                       <TableCell className="text-right">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setEditingEvent(e);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                        >
+                          Edit
+                        </Button>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -605,7 +636,66 @@ function StatusSelect({
   );
 }
 
-function NewEventForm({ onCreated }: { onCreated: () => void }) {
+type EditableEvent = {
+  id: string;
+  title: string;
+  category: string;
+  starts_at: string;
+  venue: string;
+  city: string;
+  flyer_url: string | null;
+  price_regular: number;
+  price_vip: number | null;
+  capacity: number | null;
+  description: string;
+};
+
+function toLocalInput(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+const EMPTY_EVENT_FORM = {
+  title: "",
+  category: "Pool Party",
+  starts_at: "",
+  venue: "",
+  city: "Lagos",
+  flyer_url: "",
+  price_regular: "",
+  price_vip: "",
+  capacity: "",
+  description: "",
+};
+
+function NewEventForm({
+  onCreated,
+  editing,
+  onCancel,
+}: {
+  onCreated: () => void;
+  editing: EditableEvent | null;
+  onCancel: () => void;
+}) {
+  useEffect(() => {
+    if (!editing) {
+      setForm(EMPTY_EVENT_FORM);
+      return;
+    }
+    setForm({
+      title: editing.title,
+      category: editing.category,
+      starts_at: toLocalInput(editing.starts_at),
+      venue: editing.venue,
+      city: editing.city,
+      flyer_url: editing.flyer_url ?? "",
+      price_regular: String(editing.price_regular ?? ""),
+      price_vip: editing.price_vip == null ? "" : String(editing.price_vip),
+      capacity: editing.capacity == null ? "" : String(editing.capacity),
+      description: editing.description ?? "",
+    });
+  }, [editing]);
   const [form, setForm] = useState({
     title: "",
     category: "Pool Party",
@@ -626,8 +716,7 @@ function NewEventForm({ onCreated }: { onCreated: () => void }) {
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "")
         .slice(0, 60);
-      const { error } = await supabase.from("events").insert({
-        slug: `${slug}-${Math.random().toString(36).slice(2, 6)}`,
+      const fields = {
         title: form.title.trim(),
         category: form.category,
         starts_at: new Date(form.starts_at).toISOString(),
@@ -638,19 +727,24 @@ function NewEventForm({ onCreated }: { onCreated: () => void }) {
         price_vip: form.price_vip ? Number(form.price_vip) : null,
         capacity: form.capacity ? Number(form.capacity) : null,
         description: form.description.trim(),
-      });
+      };
+      const { error } = editing
+        ? await supabase.from("events").update(fields).eq("id", editing.id)
+        : await supabase
+            .from("events")
+            .insert({ ...fields, slug: `${slug}-${Math.random().toString(36).slice(2, 6)}` });
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Event created");
+      toast.success(editing ? "Event updated" : "Event created");
       setForm({ ...form, title: "", starts_at: "", venue: "", description: "" });
       onCreated();
     },
-    onError: () => toast.error("Could not create the event"),
+    onError: () => toast.error(editing ? "Could not update the event" : "Could not create the event"),
   });
 
   return (
-    <Panel title="Create a new event">
+    <Panel title={editing ? `Editing: ${editing.title}` : "Create a new event"}>
       <form
         className="grid gap-4 sm:grid-cols-2"
         onSubmit={(e) => {
@@ -749,8 +843,13 @@ function NewEventForm({ onCreated }: { onCreated: () => void }) {
           className="bg-hype text-primary-foreground sm:col-span-2"
         >
           <CalendarDays className="mr-2 h-4 w-4" />
-          {mutation.isPending ? "Creating…" : "Create event"}
+          {mutation.isPending ? "Saving…" : editing ? "Save changes" : "Create event"}
         </Button>
+        {editing && (
+          <Button type="button" variant="outline" className="border-border sm:col-span-2" onClick={onCancel}>
+            Cancel editing
+          </Button>
+        )}
       </form>
     </Panel>
   );
