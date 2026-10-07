@@ -684,11 +684,37 @@ function NewEventForm({ onCreated }: { onCreated: () => void }) {
           onChange={(v) => setForm({ ...form, venue: v })}
         />
         <AdminField label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-        <AdminField
-          label="Flyer image URL"
-          value={form.flyer_url}
-          onChange={(v) => setForm({ ...form, flyer_url: v })}
-        />
+        <div className="space-y-2">
+          <AdminField
+            label="Flyer image URL"
+            value={form.flyer_url}
+            onChange={(v) => setForm({ ...form, flyer_url: v })}
+          />
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              e.target.value = "";
+              if (!file) return;
+              if (!file.type.startsWith("image/")) return void toast.error("Choose an image file");
+              if (file.size > 10 * 1024 * 1024) return void toast.error("Image too large (max 10MB)");
+              const path = `flyers/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
+              const t = toast.loading("Uploading flyer…");
+              const up = await supabase.storage.from("site-media").upload(path, file, { contentType: file.type });
+              if (up.error) return void toast.error(up.error.message, { id: t });
+              const signed = await supabase.storage
+                .from("site-media")
+                .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+              if (signed.error || !signed.data) return void toast.error("Couldn't create image link", { id: t });
+              setForm((f) => ({ ...f, flyer_url: signed.data.signedUrl }));
+              toast.success("Flyer uploaded — remember to save the event", { id: t });
+            }}
+          />
+          {form.flyer_url && (
+            <img src={form.flyer_url} alt="Flyer preview" className="h-32 w-auto rounded-xl object-cover" />
+          )}
+        </div>
         <AdminField
           label="Regular price (₦)"
           type="number"
