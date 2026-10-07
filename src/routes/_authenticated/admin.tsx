@@ -685,11 +685,7 @@ function NewEventForm({ onCreated }: { onCreated: () => void }) {
         />
         <AdminField label="City" value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
         <div className="space-y-2">
-          <AdminField
-            label="Flyer image URL"
-            value={form.flyer_url}
-            onChange={(v) => setForm({ ...form, flyer_url: v })}
-          />
+          <Label>Flyer image</Label>
           <Input
             type="file"
             accept="image/*"
@@ -712,7 +708,12 @@ function NewEventForm({ onCreated }: { onCreated: () => void }) {
             }}
           />
           {form.flyer_url && (
-            <img src={form.flyer_url} alt="Flyer preview" className="h-32 w-auto rounded-xl object-cover" />
+            <div className="flex items-end gap-3">
+              <img src={form.flyer_url} alt="Flyer preview" className="h-32 w-auto rounded-xl object-cover" />
+              <Button type="button" variant="outline" size="sm" onClick={() => setForm((f) => ({ ...f, flyer_url: "" }))}>
+                Remove
+              </Button>
+            </div>
           )}
         </div>
         <AdminField
