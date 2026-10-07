@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CalendarDays, LogOut, MapPin, Music2, PartyPopper, Ticket } from "lucide-react";
 
+import { EventRecommender } from "@/components/site/EventRecommender";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -84,6 +85,10 @@ function AccountPage() {
         <Button variant="outline" className="border-border" onClick={signOut}>
           <LogOut className="mr-2 h-4 w-4" /> Sign out
         </Button>
+      </div>
+
+      <div className="mt-10">
+        <EventRecommender />
       </div>
 
       {isLoading && <p className="mt-10 text-muted-foreground">Loading your activity…</p>}
