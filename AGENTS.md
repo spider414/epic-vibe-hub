@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Dance package editing lives in the Content dashboard section and updates existing public.packages rows; this matches the existing content/admin write policies and keeps public dance rates in sync.

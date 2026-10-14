@@ -23,6 +23,8 @@ export const Route = createFileRoute("/dance")({
         property: "og:description",
         content: "Professional dancers, choreography and classes for every occasion.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: DancePage,
