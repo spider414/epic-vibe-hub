@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Image as ImageIcon, Loader2, Upload, Video } from "lucide-react";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ export function HeroMediaManager({ settingsKey = HERO_MEDIA_KEY, folder = "hero"
   const [urlInput, setUrlInput] = useState("");
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const fieldId = useId();
 
   async function save(next: HeroMedia | { type: "image"; url: "" }) {
     const { error } = await supabase
@@ -92,9 +93,9 @@ export function HeroMediaManager({ settingsKey = HERO_MEDIA_KEY, folder = "hero"
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-4">
           <div>
-            <Label htmlFor="hero-file">Upload image or video</Label>
+            <Label htmlFor={`${fieldId}-file`}>Upload image or video</Label>
             <Input
-              id="hero-file"
+              id={`${fieldId}-file`}
               ref={fileRef}
               type="file"
               accept="image/*,video/*"
@@ -111,16 +112,17 @@ export function HeroMediaManager({ settingsKey = HERO_MEDIA_KEY, folder = "hero"
           </div>
 
           <div>
-            <Label htmlFor="hero-url">Or paste a media link</Label>
+            <Label htmlFor={`${fieldId}-url`}>Or paste a media link</Label>
             <div className="mt-2 flex gap-2">
               <Input
-                id="hero-url"
+                id={`${fieldId}-url`}
                 placeholder="https://…/hero.mp4"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
               />
               <Button
                 onClick={() => void handleUrl()}
+                aria-label="Save media link"
                 disabled={busy || !urlInput.trim()}
                 className="bg-hype text-primary-foreground hover:opacity-90"
               >

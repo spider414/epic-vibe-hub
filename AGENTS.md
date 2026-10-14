@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Dance package editing lives in the Content dashboard section and updates existing public.packages rows; this matches the existing content/admin write policies and keeps public dance rates in sync.
+- Homepage and dance backgrounds use separate site_settings keys through the shared media manager in the Homepage dashboard tab, so updating one does not replace the other.

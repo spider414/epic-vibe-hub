@@ -38,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { canAccess, SECTIONS, type AppRole, type SectionKey } from "@/lib/roles";
 import { formatEventDate, formatNaira } from "@/lib/site";
+import { DANCE_HERO_MEDIA_KEY } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -553,6 +554,9 @@ function AdminPage() {
   <TabsContent value="homepage" className="pt-6">
             <Panel title="Hero background">
               <HeroMediaManager />
+            </Panel>
+            <Panel title="Dance page background">
+              <HeroMediaManager settingsKey={DANCE_HERO_MEDIA_KEY} folder="dance-hero" />
             </Panel>
             <Panel title="Contact & social links">
               <ContactInfoManager />
