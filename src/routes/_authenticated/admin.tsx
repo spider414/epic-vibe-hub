@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { BookingsManager } from "@/components/admin/BookingsManager";
 import { ContactInfoManager } from "@/components/admin/ContactInfoManager";
+import { DancePackagesManager } from "@/components/admin/DancePackagesManager";
 import { HeroMediaManager } from "@/components/admin/HeroMediaManager";
 
 import { DanceBookingsManager } from "@/components/admin/DanceBookingsManager";
@@ -49,6 +50,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       },
       { property: "og:title", content: "Admin Dashboard — Epic Entertainment" },
       { property: "og:description", content: "Internal Epic Entertainment management dashboard." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -447,6 +450,9 @@ function AdminPage() {
         {/* CONTENT */}
         {can("content") ? (
   <TabsContent value="content" className="space-y-8 pt-6">
+            <Panel title="Dance packages & rates">
+              <DancePackagesManager />
+            </Panel>
             <NewMediaForm onCreated={() => invalidate("media")} />
             <Panel title="Gallery items">
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
