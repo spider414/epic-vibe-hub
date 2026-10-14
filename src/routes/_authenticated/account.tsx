@@ -74,20 +74,20 @@ function AccountPage() {
   const name = (user?.user_metadata?.["full_name"] as string | undefined) || user?.email;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
+    <div className="mx-auto w-full min-w-0 max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:items-end sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <p className="text-xs tracking-[0.3em] text-muted-foreground">MY ACCOUNT</p>
-          <h1 className="mt-2 font-display text-4xl sm:text-5xl">
+          <h1 className="mt-2 break-words font-display text-3xl leading-tight [overflow-wrap:anywhere] sm:text-5xl">
             Hey, <span className="text-hype">{name}</span>
           </h1>
         </div>
-        <Button variant="outline" className="border-border" onClick={signOut}>
+        <Button variant="outline" className="min-h-11 shrink-0 border-border" onClick={signOut}>
           <LogOut className="mr-2 h-4 w-4" /> Sign out
         </Button>
       </div>
 
-      <div className="mt-10">
+      <div className="mt-6 min-w-0 sm:mt-10">
         <EventRecommender />
       </div>
 
@@ -99,9 +99,9 @@ function AccountPage() {
           <Section icon={<Ticket className="h-5 w-5" />} title="My tickets" empty="No tickets yet." count={data.orders.length}
             cta={<Link to="/events" className="text-primary underline">Browse events</Link>}>
             {data.orders.map((o, i) => (
-              <div key={i} className="card-elevated flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5">
-                <div>
-                  <p className="font-display text-xl">{o.event_title ?? "Event"}</p>
+              <div key={i} className="card-elevated grid min-w-0 grid-cols-1 gap-4 rounded-2xl p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-5">
+                <div className="min-w-0 [overflow-wrap:anywhere]">
+                  <p className="font-display text-xl leading-tight">{o.event_title ?? "Event"}</p>
                   <p className="mt-1 flex flex-wrap gap-x-4 text-sm text-muted-foreground">
                     <span className="inline-flex items-center gap-1"><CalendarDays className="h-4 w-4" />{fmtDate(o.event_starts_at)}</span>
                     {o.event_venue && <span className="inline-flex items-center gap-1"><MapPin className="h-4 w-4" />{o.event_venue}</span>}
@@ -111,7 +111,7 @@ function AccountPage() {
                   </p>
                 </div>
                 {o.access_token && (
-                  <Button asChild className="bg-hype text-primary-foreground">
+                  <Button asChild className="min-h-11 w-full bg-hype text-primary-foreground sm:w-auto">
                     <Link to="/tickets/$token" params={{ token: o.access_token }}>View ticket</Link>
                   </Button>
                 )}
@@ -139,7 +139,7 @@ function Section({ icon, title, empty, count, cta, children }: {
 }) {
   return (
     <section>
-      <h2 className="flex items-center gap-2 font-display text-2xl">{icon}{title}</h2>
+      <h2 className="flex items-start gap-2 font-display text-2xl leading-tight"><span className="mt-1 shrink-0">{icon}</span>{title}</h2>
       <div className="mt-4 grid gap-3">
         {count === 0 ? <p className="rounded-2xl border border-border p-5 text-sm text-muted-foreground">{empty} {cta}</p> : children}
       </div>
@@ -149,10 +149,10 @@ function Section({ icon, title, empty, count, cta, children }: {
 
 function BookingRow({ b }: { b: Booking }) {
   return (
-    <div className="card-elevated rounded-2xl p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="font-display text-xl">{b.event_type ?? "Booking"}</p>
-        <span className="font-mono text-xs text-muted-foreground">{b.reference}</span>
+    <div className="card-elevated min-w-0 rounded-2xl p-4 [overflow-wrap:anywhere] sm:p-5">
+      <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <p className="min-w-0 font-display text-xl leading-tight">{b.event_type ?? "Booking"}</p>
+        <span className="break-all font-mono text-xs text-muted-foreground">{b.reference}</span>
       </div>
       <p className="mt-1 text-sm text-muted-foreground">{fmtDate(b.date)}{b.location ? ` · ${b.location}` : ""}</p>
       <p className="mt-1 text-sm">
